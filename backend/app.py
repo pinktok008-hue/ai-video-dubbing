@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File
 import os
+import subprocess
 
 app = FastAPI()
 
@@ -21,3 +22,23 @@ async def upload_video(video: UploadFile = File(...)):
         "status": "success",
         "filename": video.filename
     }
+
+@app.get("/ffmpeg-test")
+def ffmpeg_test():
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-version"],
+            capture_output=True,
+            text=True
+        )
+
+        return {
+            "installed": True,
+            "output": result.stdout[:500]
+        }
+
+    except Exception as e:
+        return {
+            "installed": False,
+            "error": str(e)
+        }
