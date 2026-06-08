@@ -4,14 +4,6 @@ def extract_audio(video_path, audio_path):
     (
         ffmpeg
         .input(video_path)
-        .output(
-            audio_path,
-            acodec="pcm_s16le",
-            ar="16000",
-            ac=1
-        )
-        .overwrite_output()
-        .run()
+        .output(audio_path)
+        .run(overwrite_output=True)
     )
-
-    return audio_path
