@@ -4,6 +4,6 @@ app = FastAPI()
 
 @app.get("/")
 def home():
-return {
-"message": "AI Video Dubbing API Running"
-}
+    return {
+        "message": "AI Video Dubbing API Running"
+    }
