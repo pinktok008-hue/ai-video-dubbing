@@ -66,10 +66,7 @@ video.filename
 with open(video_path, "wb") as f:
     f.write(await video.read())
 
-audio_name = (
-    os.path.splitext(video.filename)[0]
-    + ".wav"
-)
+audio_name = os.path.splitext(video.filename)[0] + ".wav"
 
 audio_path = os.path.join(
     "audio",
