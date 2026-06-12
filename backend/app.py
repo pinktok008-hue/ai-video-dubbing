@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 import os
 import subprocess
 from services.audio_extractor import extract_audio
+from services.transcription_service import transcribe_audio
 
 app = FastAPI()
 
@@ -78,3 +79,8 @@ async def extract_audio_api(video: UploadFile = File(...)):
         "status": "success",
         "audio_file": audio_name
     }
+
+@app.post("/transcribe")
+async def transcribe_api():
+    result = transcribe_audio("sample.wav")
+    return result
