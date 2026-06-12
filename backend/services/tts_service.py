@@ -1,13 +1,18 @@
+from gtts import gTTS
 from pathlib import Path
 
 def generate_speech(text):
 
-    output_file = "audio/generated_voice.mp3"
-
     Path("audio").mkdir(exist_ok=True)
 
-    with open(output_file, "wb") as f:
-        f.write(b"placeholder audio")
+    output_file = "audio/generated_voice.mp3"
+
+    tts = gTTS(
+        text=text,
+        lang="en"
+    )
+
+    tts.save(output_file)
 
     return {
         "status": "success",
