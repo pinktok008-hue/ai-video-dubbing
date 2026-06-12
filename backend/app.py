@@ -4,6 +4,7 @@ import subprocess
 from services.audio_extractor import extract_audio
 from services.transcription_service import transcribe_audio
 from services.translation_service import translate_text
+from services.tts_service import generate_speech
 
 app = FastAPI()
 
@@ -96,4 +97,11 @@ def translate_api(
         language
     )
 
+    return result
+
+@app.get("/tts")
+def tts_api(
+    text: str = "Hello world"
+):
+    result = generate_speech(text)
     return result
