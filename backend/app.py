@@ -87,10 +87,13 @@ async def transcribe_api():
     return result
 
 @app.get("/translate")
-def translate_api():
+def translate_api(
+    text: str = "Hello world",
+    language: str = "Hindi"
+):
     result = translate_text(
-        "Hello world",
-        "Hindi"
+        text,
+        language
     )
 
     return result
