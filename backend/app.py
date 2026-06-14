@@ -99,7 +99,7 @@ def translate_api(
 
     return result
 
-@@app.get("/tts")
+@app.get("/tts")
 def tts_api(
     text: str = "Hello world",
     language: str = "English"
@@ -110,6 +110,7 @@ def tts_api(
     )
 
     return result
+
 from fastapi.responses import FileResponse
 
 @app.get("/download-audio")
