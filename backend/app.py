@@ -99,11 +99,16 @@ def translate_api(
 
     return result
 
-@app.get("/tts")
+@@app.get("/tts")
 def tts_api(
-    text: str = "Hello world"
+    text: str = "Hello world",
+    language: str = "English"
 ):
-    result = generate_speech(text)
+    result = generate_speech(
+        text,
+        language
+    )
+
     return result
 from fastapi.responses import FileResponse
 
