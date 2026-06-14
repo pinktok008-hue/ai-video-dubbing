@@ -120,3 +120,53 @@ def download_audio():
         media_type="audio/mpeg",
         filename="generated_voice.mp3"
     )
+
+@app.post("/dub-video")
+async def dub_video(
+    video: UploadFile = File(...),
+    language: str = "Hindi"
+):
+    # Save video
+    video_path = os.path.join(
+        UPLOAD_FOLDER,
+        video.filename
+    )
+
+    with open(video_path, "wb") as f:
+        f.write(await video.read())
+
+    # Extract audio
+    audio_name = os.path.splitext(video.filename)[0] + ".wav"
+
+    audio_path = os.path.join(
+        AUDIO_FOLDER,
+        audio_name
+    )
+
+    extract_audio(
+        video_path,
+        audio_path
+    )
+
+    # Transcribe
+    transcription = transcribe_audio(audio_path)
+
+    # Translate
+    translation = translate_text(
+        transcription["text"],
+        language
+    )
+
+    # Generate speech
+    speech = generate_speech(
+        translation["translated_text"],
+        language
+    )
+
+    return {
+        "status": "success",
+        "language": language,
+        "audio_file": speech["audio_file"],
+        "original_text": transcription["text"],
+        "translated_text": translation["translated_text"]
+    }
