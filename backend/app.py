@@ -105,3 +105,12 @@ def tts_api(
 ):
     result = generate_speech(text)
     return result
+from fastapi.responses import FileResponse
+
+@app.get("/download-audio")
+def download_audio():
+    return FileResponse(
+        "audio/generated_voice.mp3",
+        media_type="audio/mpeg",
+        filename="generated_voice.mp3"
+    )
