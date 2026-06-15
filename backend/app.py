@@ -167,12 +167,13 @@ async def dub_video(
     )
 
     return {
-        "status": "success",
-        "language": language,
-        "audio_file": speech["audio_file"],
-        "original_text": transcription["text"],
-        "translated_text": translation["translated_text"]
-    }
+    "status": "success",
+    "language": language,
+    "audio_file": speech["audio_file"],
+    "video_file": output_video,
+    "original_text": transcription["text"],
+    "translated_text": translation["translated_text"]
+}
 
 from fastapi.responses import FileResponse
 
