@@ -3,5 +3,4 @@ uvicorn
 python-multipart
 ffmpeg-python
 gtts
-openai-whisper
-torch
+groq
