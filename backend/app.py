@@ -11,9 +11,11 @@ app = FastAPI()
 
 UPLOAD_FOLDER = "uploads"
 AUDIO_FOLDER = "audio"
+VIDEO_FOLDER = "video"
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(AUDIO_FOLDER, exist_ok=True)
+os.makedirs(VIDEO_FOLDER, exist_ok=True)
 
 @app.get("/")
 def home():
