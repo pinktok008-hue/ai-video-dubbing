@@ -171,3 +171,14 @@ async def dub_video(
         "original_text": transcription["text"],
         "translated_text": translation["translated_text"]
     }
+
+from fastapi.responses import FileResponse
+
+@app.get("/download-video")
+def download_video():
+
+    return FileResponse(
+        "video/dubbed_video.mp4",
+        media_type="video/mp4",
+        filename="dubbed_video.mp4"
+    )
