@@ -166,6 +166,18 @@ async def dub_video(
         language
     )
 
+    # Merge dubbed audio with original video
+output_video = os.path.join(
+    VIDEO_FOLDER,
+    "dubbed_video.mp4"
+)
+
+merge_video_audio(
+    video_path,
+    speech["audio_file"],
+    output_video
+)
+
     return {
     "status": "success",
     "language": language,
