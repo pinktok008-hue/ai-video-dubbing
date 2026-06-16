@@ -160,32 +160,32 @@ async def dub_video(
         language
     )
 
-    # Generate speech
+        # Generate speech
     speech = generate_speech(
         translation["translated_text"],
         language
     )
 
     # Merge dubbed audio with original video
-output_video = os.path.join(
-    VIDEO_FOLDER,
-    "dubbed_video.mp4"
-)
+    output_video = os.path.join(
+        VIDEO_FOLDER,
+        "dubbed_video.mp4"
+    )
 
-merge_video_audio(
-    video_path,
-    speech["audio_file"],
-    output_video
-)
+    merge_video_audio(
+        video_path,
+        speech["audio_file"],
+        output_video
+    )
 
     return {
-    "status": "success",
-    "language": language,
-    "audio_file": speech["audio_file"],
-    "video_file": output_video,
-    "original_text": transcription["text"],
-    "translated_text": translation["translated_text"]
-}
+        "status": "success",
+        "language": language,
+        "audio_file": speech["audio_file"],
+        "video_file": output_video,
+        "original_text": transcription["text"],
+        "translated_text": translation["translated_text"]
+    }
 
 from fastapi.responses import FileResponse
 
