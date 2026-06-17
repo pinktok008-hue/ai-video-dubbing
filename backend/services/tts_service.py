@@ -1,36 +1,60 @@
-from gtts import gTTS
-from pathlib import Path
+import os
+import asyncio
+import edge_tts
 
-LANGUAGE_CODES = {
-    "English": "en",
-    "Hindi": "hi",
-    "Bengali": "bn",
-    "German": "de",
-    "Chinese": "zh-CN",
-    "Korean": "ko"
-}
+async def generate_edge_tts(text, language):
 
-def generate_speech(text, language="English"):
+    voices = {
+        "Hindi": "hi-IN-SwaraNeural",
+        "English": "en-US-JennyNeural",
+        "German": "de-DE-KatjaNeural",
+        "French": "fr-FR-DeniseNeural",
+        "Spanish": "es-ES-ElviraNeural",
+        "Chinese": "zh-CN-XiaoxiaoNeural",
+        "Japanese": "ja-JP-NanamiNeural",
+        "Korean": "ko-KR-SunHiNeural"
+    }
 
-    Path("audio").mkdir(exist_ok=True)
+    voice = voices.get(
+        language,
+        "en-US-JennyNeural"
+    )
 
     output_file = "audio/generated_voice.mp3"
 
-    lang_code = LANGUAGE_CODES.get(
-        language,
-        "en"
+    communicate = edge_tts.Communicate(
+        text,
+        voice
     )
 
-    tts = gTTS(
-        text=text,
-        lang=lang_code
-    )
+    await communicate.save(output_file)
 
-    tts.save(output_file)
+    return output_file
 
-    return {
-        "status": "success",
-        "audio_file": output_file,
-        "language": language,
-        "text": text
-    }
+
+def generate_speech(
+    text,
+    language="English"
+):
+
+    try:
+
+        audio_file = asyncio.run(
+            generate_edge_tts(
+                text,
+                language
+            )
+        )
+
+        return {
+            "status": "success",
+            "audio_file": audio_file,
+            "text": text
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
