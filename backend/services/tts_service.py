@@ -32,29 +32,41 @@ async def generate_edge_tts(text, language):
     return output_file
 
 
-def generate_speech(
+import os
+import edge_tts
+
+async def generate_speech(
     text,
     language="English"
 ):
 
-    try:
+    voices = {
+        "Hindi": "hi-IN-SwaraNeural",
+        "English": "en-US-JennyNeural",
+        "German": "de-DE-KatjaNeural",
+        "French": "fr-FR-DeniseNeural",
+        "Spanish": "es-ES-ElviraNeural",
+        "Chinese": "zh-CN-XiaoxiaoNeural",
+        "Japanese": "ja-JP-NanamiNeural",
+        "Korean": "ko-KR-SunHiNeural"
+    }
 
-        audio_file = asyncio.run(
-            generate_edge_tts(
-                text,
-                language
-            )
-        )
+    voice = voices.get(
+        language,
+        "en-US-JennyNeural"
+    )
 
-        return {
-            "status": "success",
-            "audio_file": audio_file,
-            "text": text
-        }
+    output_file = "audio/generated_voice.mp3"
 
-    except Exception as e:
+    communicate = edge_tts.Communicate(
+        text,
+        voice
+    )
 
-        return {
-            "status": "error",
-            "message": str(e)
-        }
+    await communicate.save(output_file)
+
+    return {
+        "status": "success",
+        "audio_file": output_file,
+        "text": text
+    }
