@@ -16,7 +16,8 @@ def merge_video_audio(
             audio.audio,
             output_path,
             vcodec="copy",
-            acodec="aac"
+            acodec="aac",
+            shortest=None
         )
         .overwrite_output()
         .run()
