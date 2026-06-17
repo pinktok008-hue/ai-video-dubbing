@@ -161,10 +161,10 @@ async def dub_video(
     )
 
         # Generate speech
-    speech = generate_speech(
-        translation["translated_text"],
-        language
-    )
+    speech = await generate_speech(
+    translation["translated_text"],
+    language
+)
 
     # Merge dubbed audio with original video
     output_video = os.path.join(
