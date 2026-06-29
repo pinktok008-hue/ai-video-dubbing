@@ -6,6 +6,7 @@ from services.transcription_service import transcribe_audio
 from services.translation_service import translate_text
 from services.tts_service import generate_speech
 from services.video_merger import merge_video_audio
+from services.audio_cleaner import remove_original_audio
 
 app = FastAPI()
 
