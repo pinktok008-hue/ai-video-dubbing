@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import FileResponse
 import os
 import subprocess
 from services.audio_extractor import extract_audio
