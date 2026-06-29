@@ -162,20 +162,25 @@ async def dub_video(
     )
 
         # Generate speech
-    speech = await generate_speech(
+speech = await generate_speech(
     translation["translated_text"],
     language
 )
 
-    # Remove original English audio
-clean_video = "video/clean_video.mp4"
+
+# Remove original English audio
+clean_video = os.path.join(
+    VIDEO_FOLDER,
+    "clean_video.mp4"
+)
 
 remove_original_audio(
     video_path,
     clean_video
 )
 
-# Merge Hindi audio with video
+
+# Merge Hindi audio with clean video
 output_video = os.path.join(
     VIDEO_FOLDER,
     "dubbed_video.mp4"
@@ -187,26 +192,15 @@ merge_video_audio(
     output_video
 )
 
-# Create dubbed video
-output_video = os.path.join(
-    VIDEO_FOLDER,
-    "dubbed_video.mp4"
-)
 
-merge_video_audio(
-    clean_video,
-    speech["audio_file"],
-    output_video
-)
-
-    return {
-        "status": "success",
-        "language": language,
-        "audio_file": speech["audio_file"],
-        "video_file": output_video,
-        "original_text": transcription["text"],
-        "translated_text": translation["translated_text"]
-    }
+return {
+    "status": "success",
+    "language": language,
+    "audio_file": speech["audio_file"],
+    "video_file": output_video,
+    "original_text": transcription["text"],
+    "translated_text": translation["translated_text"]
+}
 
 from fastapi.responses import FileResponse
 
