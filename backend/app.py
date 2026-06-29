@@ -167,18 +167,18 @@ async def dub_video(
     language
 )
 
-    # Merge dubbed audio with original video
-    output_video = os.path.join(
-        VIDEO_FOLDER,
-        "dubbed_video.mp4"
-    )
-    
-# Remove original English audio
+    # Remove original English audio
 clean_video = "video/clean_video.mp4"
 
 remove_original_audio(
     video_path,
     clean_video
+)
+
+# Create dubbed video
+output_video = os.path.join(
+    VIDEO_FOLDER,
+    "dubbed_video.mp4"
 )
 
 merge_video_audio(
