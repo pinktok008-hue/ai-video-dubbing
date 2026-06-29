@@ -1,5 +1,6 @@
 import ffmpeg
 
+
 def merge_video_audio(
     video_path,
     audio_path,
@@ -17,7 +18,7 @@ def merge_video_audio(
             output_path,
             vcodec="copy",
             acodec="aac",
-            shortest=None
+            shortest=1
         )
         .overwrite_output()
         .run()
