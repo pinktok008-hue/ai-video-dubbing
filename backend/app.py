@@ -172,12 +172,20 @@ async def dub_video(
         VIDEO_FOLDER,
         "dubbed_video.mp4"
     )
+    
+# Remove original English audio
+clean_video = "video/clean_video.mp4"
 
-    merge_video_audio(
-        video_path,
-        speech["audio_file"],
-        output_video
-    )
+remove_original_audio(
+    video_path,
+    clean_video
+)
+
+merge_video_audio(
+    clean_video,
+    speech["audio_file"],
+    output_video
+)
 
     return {
         "status": "success",
