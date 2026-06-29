@@ -202,7 +202,7 @@ return {
     "translated_text": translation["translated_text"]
 }
 
-from fastapi.responses import FileResponse
+
 
 @app.get("/download-video")
 def download_video():
