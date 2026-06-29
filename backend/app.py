@@ -175,6 +175,18 @@ remove_original_audio(
     clean_video
 )
 
+# Merge Hindi audio with video
+output_video = os.path.join(
+    VIDEO_FOLDER,
+    "dubbed_video.mp4"
+)
+
+merge_video_audio(
+    clean_video,
+    speech["audio_file"],
+    output_video
+)
+
 # Create dubbed video
 output_video = os.path.join(
     VIDEO_FOLDER,
