@@ -133,6 +133,7 @@ async def dub_video(
     video: UploadFile = File(...),
     language: str = "Hindi"
 ):
+
     # Save video
     video_path = os.path.join(
         UPLOAD_FOLDER,
@@ -141,6 +142,7 @@ async def dub_video(
 
     with open(video_path, "wb") as f:
         f.write(await video.read())
+
 
     # Extract audio
     audio_name = os.path.splitext(video.filename)[0] + ".wav"
@@ -155,8 +157,10 @@ async def dub_video(
         audio_path
     )
 
+
     # Transcribe
     transcription = transcribe_audio(audio_path)
+
 
     # Translate
     translation = translate_text(
@@ -164,46 +168,47 @@ async def dub_video(
         language
     )
 
-        # Generate speech
-speech = await generate_speech(
-    translation["translated_text"],
-    language
-)
+
+    # Generate speech
+    speech = await generate_speech(
+        translation["translated_text"],
+        language
+    )
 
 
-# Remove original English audio
-clean_video = os.path.join(
-    VIDEO_FOLDER,
-    "clean_video.mp4"
-)
+    # Remove original English audio
+    clean_video = os.path.join(
+        VIDEO_FOLDER,
+        "clean_video.mp4"
+    )
 
-remove_original_audio(
-    video_path,
-    clean_video
-)
-
-
-# Merge Hindi audio with clean video
-output_video = os.path.join(
-    VIDEO_FOLDER,
-    "dubbed_video.mp4"
-)
-
-merge_video_audio(
-    clean_video,
-    speech["audio_file"],
-    output_video
-)
+    remove_original_audio(
+        video_path,
+        clean_video
+    )
 
 
-return {
-    "status": "success",
-    "language": language,
-    "audio_file": speech["audio_file"],
-    "video_file": output_video,
-    "original_text": transcription["text"],
-    "translated_text": translation["translated_text"]
-}
+    # Merge Hindi audio with clean video
+    output_video = os.path.join(
+        VIDEO_FOLDER,
+        "dubbed_video.mp4"
+    )
+
+    merge_video_audio(
+        clean_video,
+        speech["audio_file"],
+        output_video
+    )
+
+
+    return {
+        "status": "success",
+        "language": language,
+        "audio_file": speech["audio_file"],
+        "video_file": output_video,
+        "original_text": transcription["text"],
+        "translated_text": translation["translated_text"]
+    }
 
 
 
