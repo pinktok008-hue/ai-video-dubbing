@@ -351,7 +351,7 @@ async def dub_video(
     }
 
 
-
+print("VIDEO SAVED", flush=True)
 
 
 
@@ -454,7 +454,7 @@ async def dub_video(
     }
 
 
-
+print("TTS DONE", flush=True)
 
 
 
@@ -526,6 +526,7 @@ async def dub_video(
     }
 
 
+print("MERGE DONE", flush=True)
 
 
     return {
