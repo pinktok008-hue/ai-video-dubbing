@@ -1,8 +1,10 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
+
 import os
 import subprocess
 import uuid
+
 
 from services.audio_extractor import extract_audio
 from services.transcription_service import transcribe_audio
@@ -12,9 +14,12 @@ from services.video_merger import merge_video_audio
 from services.audio_cleaner import remove_original_audio
 
 
+
 app = FastAPI()
 
+
 jobs = {}
+
 
 
 UPLOAD_FOLDER = "uploads"
@@ -22,9 +27,12 @@ AUDIO_FOLDER = "audio"
 VIDEO_FOLDER = "video"
 
 
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(AUDIO_FOLDER, exist_ok=True)
 os.makedirs(VIDEO_FOLDER, exist_ok=True)
+
+
 
 
 
@@ -37,27 +45,99 @@ def home():
 
 
 
-@app.post("/dub-video")
-async def dub_video(
-    video: UploadFile = File(...),
-    language: str = "Hindi"
+
+
+# Upload test
+
+@app.post("/upload")
+async def upload_video(
+    video: UploadFile = File(...)
 ):
 
-    job_id = str(uuid.uuid4())
-
-
-    jobs[job_id] = {
-        "status": "started",
-        "progress": 0
-    }
-
-
-    # Save video
-
-    video_path = os.path.join(
+    file_path = os.path.join(
         UPLOAD_FOLDER,
         video.filename
     )
+
+
+    with open(file_path, "wb") as f:
+
+        f.write(await video.read())
+
+
+    return {
+
+        "status": "success",
+
+        "filename": video.filename
+
+    }
+
+
+
+
+
+
+# FFmpeg check
+
+@app.get("/ffmpeg-test")
+def ffmpeg_test():
+
+    try:
+
+        result = subprocess.run(
+
+            ["ffmpeg", "-version"],
+
+            capture_output=True,
+
+            text=True
+
+        )
+
+
+        return {
+
+            "installed": True,
+
+            "output": result.stdout[:300]
+
+        }
+
+
+    except Exception as e:
+
+
+        return {
+
+            "installed": False,
+
+            "error": str(e)
+
+        }
+
+
+
+
+
+
+
+# Extract audio
+
+@app.post("/extract-audio")
+async def extract_audio_api(
+    video: UploadFile = File(...)
+):
+
+
+    video_path = os.path.join(
+
+        UPLOAD_FOLDER,
+
+        video.filename
+
+    )
+
 
 
     with open(video_path, "wb") as f:
@@ -66,49 +146,274 @@ async def dub_video(
 
 
 
+
+    audio_name = (
+
+        os.path.splitext(video.filename)[0]
+
+        + ".wav"
+
+    )
+
+
+
+    audio_path = os.path.join(
+
+        AUDIO_FOLDER,
+
+        audio_name
+
+    )
+
+
+
+    extract_audio(
+
+        video_path,
+
+        audio_path
+
+    )
+
+
+
+    return {
+
+        "status": "success",
+
+        "audio_file": audio_name
+
+    }
+
+
+
+
+
+
+
+
+# Transcription test
+
+@app.post("/transcribe")
+async def transcribe_api():
+
+    result = transcribe_audio(
+
+        "sample.wav"
+
+    )
+
+
+    return result
+
+
+
+
+
+
+
+# Translation test
+
+@app.get("/translate")
+def translate_api(
+
+    text: str = "Hello world",
+
+    language: str = "Hindi"
+
+):
+
+    result = translate_text(
+
+        text,
+
+        language
+
+    )
+
+
+    return result
+
+
+
+
+
+
+
+
+# TTS test
+
+@app.get("/tts")
+async def tts_api(
+
+    text: str = "Hello world",
+
+    language: str = "English"
+
+):
+
+
+    result = await generate_speech(
+
+        text,
+
+        language
+
+    )
+
+
+    return result
+
+
+
+
+
+
+
+# Download audio
+
+@app.get("/download-audio")
+def download_audio():
+
+
+    return FileResponse(
+
+        "audio/generated_voice.mp3",
+
+        media_type="audio/mpeg",
+
+        filename="generated_voice.mp3"
+
+    )
+
+
+
+
+
+
+
+
+# MAIN DUBBING API
+
+@app.post("/dub-video")
+async def dub_video(
+
+    video: UploadFile = File(...),
+
+    language: str = "Hindi"
+
+):
+
+
+    job_id = str(uuid.uuid4())
+
+
+
+    jobs[job_id] = {
+
+        "status": "started",
+
+        "progress": 0
+
+    }
+
+
+
+
+
+    # Save video
+
+
+    video_path = os.path.join(
+
+        UPLOAD_FOLDER,
+
+        video.filename
+
+    )
+
+
+
+    with open(video_path, "wb") as f:
+
+
+        f.write(await video.read())
+
+
+
+
     jobs[job_id] = {
 
         "status": "video uploaded",
+
         "progress": 20
 
     }
 
 
 
+
+
+
     # Extract audio
 
+
     audio_name = (
+
         os.path.splitext(video.filename)[0]
+
         + ".wav"
+
     )
 
 
     audio_path = os.path.join(
+
         AUDIO_FOLDER,
+
         audio_name
+
     )
+
 
 
     extract_audio(
+
         video_path,
+
         audio_path
+
     )
+
+
+
+
 
 
 
     # Transcribe
 
+
     transcription = transcribe_audio(
+
         audio_path
+
     )
+
+
+
 
 
 
     # Translate
 
+
     translation = translate_text(
+
         transcription["text"],
+
         language
+
     )
 
 
@@ -116,6 +421,7 @@ async def dub_video(
     jobs[job_id] = {
 
         "status": "translation done",
+
         "progress": 60
 
     }
@@ -123,7 +429,11 @@ async def dub_video(
 
 
 
-    # Generate speech
+
+
+
+    # Generate voice
+
 
     speech = await generate_speech(
 
@@ -142,6 +452,11 @@ async def dub_video(
         "progress": 80
 
     }
+
+
+
+
+
 
 
 
@@ -169,7 +484,11 @@ async def dub_video(
 
 
 
-    # Merge new audio
+
+
+
+
+    # Merge audio + video
 
 
     output_video = os.path.join(
@@ -191,6 +510,7 @@ async def dub_video(
         output_video
 
     )
+
 
 
 
@@ -217,18 +537,21 @@ async def dub_video(
 
         "video_file": output_video,
 
-        "language": language,
-
         "audio_file": speech["audio_file"],
 
-        "original_text": transcription["text"],
-
-        "translated_text": translation["translated_text"]
+        "language": language
 
     }
 
 
 
+
+
+
+
+
+
+# Download video
 
 
 @app.get("/download-video")
@@ -249,7 +572,15 @@ def download_video():
 
 
 
+
+
+
+
+# Progress status
+
+
 @app.get("/status/{job_id}")
+
 def status(job_id: str):
 
 
