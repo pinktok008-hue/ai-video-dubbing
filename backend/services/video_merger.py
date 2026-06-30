@@ -9,11 +9,9 @@ def merge_video_audio(
 
     try:
 
-        print("VIDEO:", video_path)
-        print("AUDIO:", audio_path)
-
         video = ffmpeg.input(video_path)
         audio = ffmpeg.input(audio_path)
+
 
         (
             ffmpeg
@@ -26,8 +24,12 @@ def merge_video_audio(
                 shortest=1
             )
             .overwrite_output()
-            .run()
+            .run(
+                capture_stdout=True,
+                capture_stderr=True
+            )
         )
+
 
         print("MERGE SUCCESS")
 
@@ -37,6 +39,11 @@ def merge_video_audio(
     except ffmpeg.Error as e:
 
         print("===== FFMPEG ERROR =====")
-        print(e)
+
+        if e.stderr:
+            print(e.stderr.decode())
+
+        else:
+            print("No stderr from ffmpeg")
 
         raise e
