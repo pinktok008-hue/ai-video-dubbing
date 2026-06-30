@@ -7,42 +7,54 @@ def merge_video_audio(
     output_path
 ):
 
-    video = ffmpeg.input(video_path)
+    try:
 
-    # Get original video duration
-    probe = ffmpeg.probe(video_path)
+        video_info = ffmpeg.probe(video_path)
+        video_duration = float(
+            video_info["format"]["duration"]
+        )
 
-    video_duration = float(
-        probe["format"]["duration"]
-    )
+        audio_info = ffmpeg.probe(audio_path)
+        audio_duration = float(
+            audio_info["format"]["duration"]
+        )
+
+        speed = audio_duration / video_duration
 
 
-    # Adjust voice duration to video duration
-    audio = (
-        ffmpeg
-        .input(audio_path)
-        .filter(
-            "atempo",
-            video_duration /
-            float(
-                ffmpeg.probe(audio_path)["format"]["duration"]
+        video = ffmpeg.input(video_path)
+
+        audio = (
+            ffmpeg
+            .input(audio_path)
+            .filter(
+                "atempo",
+                speed
             )
         )
-    )
 
 
-    (
-        ffmpeg
-        .output(
-            video.video,
-            audio,
-            output_path,
-            vcodec="copy",
-            acodec="aac"
+        (
+            ffmpeg
+            .output(
+                video.video,
+                audio.audio,
+                output_path,
+                vcodec="copy",
+                acodec="aac",
+                shortest=1
+            )
+            .overwrite_output()
+            .run()
         )
-        .overwrite_output()
-        .run()
-    )
 
 
-    return output_path
+        return output_path
+
+
+    except ffmpeg.Error as e:
+
+        print("FFMPEG ERROR:")
+        print(e.stderr.decode())
+
+        raise e
