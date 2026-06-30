@@ -144,6 +144,7 @@ async def dub_video(
     with open(video_path, "wb") as f:
         f.write(await video.read())
 
+    print("VIDEO SAVED")
 
     # Extract audio
     audio_name = os.path.splitext(video.filename)[0] + ".wav"
@@ -176,6 +177,7 @@ async def dub_video(
         language
     )
 
+    print("TTS DONE")
 
     # Remove original English audio
     clean_video = os.path.join(
@@ -200,7 +202,8 @@ async def dub_video(
         speech["audio_file"],
         output_video
     )
-
+    
+    print("MERGE DONE")
 
     return {
         "status": "success",
