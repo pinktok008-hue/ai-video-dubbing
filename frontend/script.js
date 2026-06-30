@@ -1,5 +1,5 @@
 const API =
-"https://YOUR-RENDER-BACKEND-URL";
+"https://ai-video-dubbing.onrender.com";
 
 
 async function uploadVideo(){
