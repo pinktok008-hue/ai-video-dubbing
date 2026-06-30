@@ -3,6 +3,7 @@ from fastapi.responses import FileResponse
 import os
 import subprocess
 import traceback
+import uuid
 
 from services.audio_extractor import extract_audio
 from services.transcription_service import transcribe_audio
@@ -13,6 +14,8 @@ from services.audio_cleaner import remove_original_audio
 
 
 app = FastAPI()
+
+jobs = {}
 
 UPLOAD_FOLDER = "uploads"
 AUDIO_FOLDER = "audio"
@@ -134,6 +137,13 @@ async def dub_video(
     video: UploadFile = File(...),
     language: str = "Hindi"
 ):
+    
+    job_id = str(uuid.uuid4())
+
+    jobs[job_id] = {
+        "status": "started",
+        "progress": 0
+    }
 
     # Save video
     video_path = os.path.join(
@@ -143,6 +153,12 @@ async def dub_video(
 
     with open(video_path, "wb") as f:
         f.write(await video.read())
+
+    
+    jobs[job_id] = {
+    "status": "video uploaded",
+    "progress": 20
+}
 
     print("VIDEO SAVED")
 
@@ -170,6 +186,10 @@ async def dub_video(
         language
     )
 
+    jobs[job_id] = {
+    "status": "translation done",
+    "progress": 60
+}
 
     # Generate speech
     speech = await generate_speech(
@@ -177,6 +197,11 @@ async def dub_video(
         language
     )
 
+jobs[job_id] = {
+    "status": "voice generated",
+    "progress": 80
+}
+    
     print("TTS DONE")
 
     # Remove original English audio
@@ -202,17 +227,24 @@ async def dub_video(
         speech["audio_file"],
         output_video
     )
-    
+
+    jobs[job_id] = {
+    "status": "completed",
+    "progress": 100,
+    "video": output_video
+}
+
     print("MERGE DONE")
 
     return {
-        "status": "success",
-        "language": language,
-        "audio_file": speech["audio_file"],
-        "video_file": output_video,
-        "original_text": transcription["text"],
-        "translated_text": translation["translated_text"]
-    }
+    "status": "success",
+    "job_id": job_id,
+    "video_file": output_video,
+    "language": language,
+    "audio_file": speech["audio_file"],
+    "original_text": transcription["text"],
+    "translated_text": translation["translated_text"]
+}
 
 
 @app.get("/download-video")
@@ -222,4 +254,14 @@ def download_video():
         "video/dubbed_video.mp4",
         media_type="video/mp4",
         filename="dubbed_video.mp4"
+    )
+
+@app.get("/status/{job_id}")
+def status(job_id:str):
+
+    return jobs.get(
+        job_id,
+        {
+            "error":"job not found"
+        }
     )
