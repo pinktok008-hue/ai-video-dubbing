@@ -1,5 +1,6 @@
 import ffmpeg
 
+
 def merge_video_audio(
     video_path,
     audio_path,
@@ -7,28 +8,41 @@ def merge_video_audio(
 ):
 
     video = ffmpeg.input(video_path)
-    audio = ffmpeg.input(audio_path)
 
-    try:
+    # Get original video duration
+    probe = ffmpeg.probe(video_path)
 
-        (
-            ffmpeg
-            .output(
-                video,
-                audio,
-                output_path,
-                vcodec="libx264",
-                acodec="aac",
-                strict="experimental"
+    video_duration = float(
+        probe["format"]["duration"]
+    )
+
+
+    # Adjust voice duration to video duration
+    audio = (
+        ffmpeg
+        .input(audio_path)
+        .filter(
+            "atempo",
+            video_duration /
+            float(
+                ffmpeg.probe(audio_path)["format"]["duration"]
             )
-            .overwrite_output()
-            .run()
         )
+    )
 
-        return output_path
 
-    except ffmpeg.Error as e:
-        print("FFMPEG ERROR:")
-        print(e.stderr.decode())
+    (
+        ffmpeg
+        .output(
+            video.video,
+            audio,
+            output_path,
+            vcodec="copy",
+            acodec="aac"
+        )
+        .overwrite_output()
+        .run()
+    )
 
-        raise e
+
+    return output_path
