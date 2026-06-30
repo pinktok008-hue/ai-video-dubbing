@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import FileResponse
 import os
 import subprocess
+import traceback
 
 from services.audio_extractor import extract_audio
 from services.transcription_service import transcribe_audio
@@ -212,11 +213,27 @@ async def dub_video(
 
 
 
-@app.get("/download-video")
-def download_video():
+@@app.post("/dub-video")
+async def dub_video(
+    video: UploadFile = File(...),
+    language: str = "Hindi"
+):
 
-    return FileResponse(
-        "video/dubbed_video.mp4",
-        media_type="video/mp4",
-        filename="dubbed_video.mp4"
-    )
+    try:
+
+        # aapka pura dubbing code yaha
+
+        return {
+            "status": "success",
+            "video_file": output_video
+        }
+
+
+    except Exception as e:
+
+        traceback.print_exc()
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
