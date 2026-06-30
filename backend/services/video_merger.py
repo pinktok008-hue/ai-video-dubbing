@@ -1,4 +1,4 @@
-import ffmpeg
+import subprocess
 
 
 def merge_video_audio(
@@ -7,43 +7,32 @@ def merge_video_audio(
     output_path
 ):
 
-    try:
+    command = [
+        "ffmpeg",
+        "-i", video_path,
+        "-i", audio_path,
+        "-map", "0:v:0",
+        "-map", "1:a:0",
+        "-c:v", "copy",
+        "-c:a", "aac",
+        "-y",
+        output_path
+    ]
 
-        video = ffmpeg.input(video_path)
-        audio = ffmpeg.input(audio_path)
+    result = subprocess.run(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
 
+    if result.returncode != 0:
+        print("FFMPEG ERROR:")
+        print(result.stderr.decode())
 
-        (
-            ffmpeg
-            .output(
-                video.video,
-                audio.audio,
-                output_path,
-                vcodec="libx264",
-                acodec="aac",
-                shortest=1
-            )
-            .overwrite_output()
-            .run(
-                capture_stdout=True,
-                capture_stderr=True
-            )
+        raise Exception(
+            "FFmpeg merge failed"
         )
 
+    print("MERGE SUCCESS")
 
-        print("MERGE SUCCESS")
-
-        return output_path
-
-
-    except ffmpeg.Error as e:
-
-        print("===== FFMPEG ERROR =====")
-
-        if e.stderr:
-            print(e.stderr.decode())
-
-        else:
-            print("No stderr from ffmpeg")
-
-        raise e
+    return output_path
