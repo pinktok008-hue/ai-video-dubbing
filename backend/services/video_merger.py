@@ -37,6 +37,6 @@ def merge_video_audio(
     except ffmpeg.Error as e:
 
         print("===== FFMPEG ERROR =====")
-        print(e.stderr.decode())
+        print(e)
 
         raise e
