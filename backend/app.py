@@ -198,17 +198,19 @@ speech = await generate_speech(
 
 
 jobs[job_id] = {
-    "status": "voice generated",
-    "progress": 80
-}
+        "status": "voice generated",
+        "progress": 80
+    }
 
-print("TTS DONE")
+    print("TTS DONE")
+
 
     # Remove original English audio
     clean_video = os.path.join(
         VIDEO_FOLDER,
         "clean_video.mp4"
     )
+
 
     remove_original_audio(
         video_path,
@@ -221,6 +223,7 @@ print("TTS DONE")
         VIDEO_FOLDER,
         "dubbed_video.mp4"
     )
+
 
     merge_video_audio(
         clean_video,
