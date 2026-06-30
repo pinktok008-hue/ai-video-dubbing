@@ -215,21 +215,11 @@ async def dub_video(
     }
 
 
-    try:
+@app.get("/download-video")
+def download_video():
 
-        # aapka pura dubbing code yaha
-
-        return {
-            "status": "success",
-            "video_file": output_video
-        }
-
-
-    except Exception as e:
-
-        traceback.print_exc()
-
-        return {
-            "status": "error",
-            "message": str(e)
-        }
+    return FileResponse(
+        "video/dubbed_video.mp4",
+        media_type="video/mp4",
+        filename="dubbed_video.mp4"
+    )
