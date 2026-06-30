@@ -111,18 +111,17 @@ def translate_api(
     return result
 
 @app.get("/tts")
-def tts_api(
+async def tts_api(
     text: str = "Hello world",
     language: str = "English"
 ):
-    result = generate_speech(
+    result = await generate_speech(
         text,
         language
     )
 
     return result
 
-from fastapi.responses import FileResponse
 
 @app.get("/download-audio")
 def download_audio():
@@ -192,17 +191,18 @@ async def dub_video(
 }
 
     # Generate speech
-    speech = await generate_speech(
-        translation["translated_text"],
-        language
-    )
+speech = await generate_speech(
+    translation["translated_text"],
+    language
+)
+
 
 jobs[job_id] = {
     "status": "voice generated",
     "progress": 80
 }
-    
-    print("TTS DONE")
+
+print("TTS DONE")
 
     # Remove original English audio
     clean_video = os.path.join(
