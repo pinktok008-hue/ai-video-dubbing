@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>AI Video Dubbing</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+
+<h1>AI Video Dubbing</h1>
+
+
+<input 
+type="file"
+id="videoFile"
+accept="video/*"
+/>
+
+
+<select id="language">
+
+<option>Hindi</option>
+<option>English</option>
+<option>German</option>
+<option>French</option>
+
+</select>
+
+
+<button onclick="uploadVideo()">
+Start Dubbing
+</button>
+
+
+<h3 id="status">
+Waiting...
+</h3>
+
+
+<progress 
+id="progress"
+value="0"
+max="100">
+</progress>
+
+
+<br><br>
+
+
+<a 
+id="download"
+style="display:none">
+Download Video
+</a>
+
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
