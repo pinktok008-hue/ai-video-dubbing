@@ -213,7 +213,7 @@ async def dub_video(
 
 
 
-@@app.post("/dub-video")
+@app.post("/dub-video")
 async def dub_video(
     video: UploadFile = File(...),
     language: str = "Hindi"
