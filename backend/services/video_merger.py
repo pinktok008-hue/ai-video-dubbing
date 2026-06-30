@@ -9,30 +9,11 @@ def merge_video_audio(
 
     try:
 
-        video_info = ffmpeg.probe(video_path)
-        video_duration = float(
-            video_info["format"]["duration"]
-        )
-
-        audio_info = ffmpeg.probe(audio_path)
-        audio_duration = float(
-            audio_info["format"]["duration"]
-        )
-
-        speed = audio_duration / video_duration
-
+        print("VIDEO:", video_path)
+        print("AUDIO:", audio_path)
 
         video = ffmpeg.input(video_path)
-
-        audio = (
-            ffmpeg
-            .input(audio_path)
-            .filter(
-                "atempo",
-                speed
-            )
-        )
-
+        audio = ffmpeg.input(audio_path)
 
         (
             ffmpeg
@@ -40,7 +21,7 @@ def merge_video_audio(
                 video.video,
                 audio.audio,
                 output_path,
-                vcodec="copy",
+                vcodec="libx264",
                 acodec="aac",
                 shortest=1
             )
@@ -48,13 +29,14 @@ def merge_video_audio(
             .run()
         )
 
+        print("MERGE SUCCESS")
 
         return output_path
 
 
     except ffmpeg.Error as e:
 
-        print("FFMPEG ERROR:")
+        print("===== FFMPEG ERROR =====")
         print(e.stderr.decode())
 
         raise e
