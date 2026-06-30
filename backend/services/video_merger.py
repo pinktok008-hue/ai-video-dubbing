@@ -11,13 +11,21 @@ def merge_video_audio(
         "ffmpeg",
         "-i", video_path,
         "-i", audio_path,
+
+        # video length ke hisab se audio cut/adjust
         "-map", "0:v:0",
         "-map", "1:a:0",
+
         "-c:v", "copy",
         "-c:a", "aac",
+
+        # original video duration maintain
+        "-shortest",
+
         "-y",
         output_path
     ]
+
 
     result = subprocess.run(
         command,
@@ -25,14 +33,10 @@ def merge_video_audio(
         stderr=subprocess.PIPE
     )
 
+
     if result.returncode != 0:
-        print("FFMPEG ERROR:")
         print(result.stderr.decode())
+        raise Exception("FFmpeg merge failed")
 
-        raise Exception(
-            "FFmpeg merge failed"
-        )
-
-    print("MERGE SUCCESS")
 
     return output_path
