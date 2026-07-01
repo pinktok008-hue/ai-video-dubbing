@@ -349,9 +349,8 @@ async def dub_video(
         "progress": 20
 
     }
-
-
-print("VIDEO SAVED", flush=True)
+    
+    print("VIDEO SAVED", flush=True)
 
 
 
@@ -452,9 +451,8 @@ print("VIDEO SAVED", flush=True)
         "progress": 80
 
     }
-
-
-print("TTS DONE", flush=True)
+    
+    print("TTS DONE", flush=True)
 
 
 
@@ -524,9 +522,8 @@ print("TTS DONE", flush=True)
         "video": output_video
 
     }
-
-
-print("MERGE DONE", flush=True)
+    
+    print("MERGE DONE", flush=True)
 
 
     return {
