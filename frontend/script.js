@@ -3,7 +3,6 @@ const API_URL = "https://ai-video-dubbing.onrender.com";
 
 async function uploadVideo(){
 
-
 const file =
 document.getElementById("videoFile").files[0];
 
@@ -12,21 +11,19 @@ const language =
 document.getElementById("language").value;
 
 
-
 if(!file){
-
-alert("Pehle video select karo");
-
-return;
-
+    alert("Video select karo");
+    return;
 }
 
 
 
 let formData = new FormData();
 
-
-formData.append("video",file);
+formData.append(
+    "video",
+    file
+);
 
 
 
@@ -34,21 +31,49 @@ document.getElementById("status").innerHTML =
 "Uploading...";
 
 
-
-try{
-
-
 let response = await fetch(
 
 API_URL + "/dub-video?language=" + language,
 
 {
-
 method:"POST",
-
 body:formData
+}
+
+);
+
+
+
+let data = await response.json();
+
+
+console.log(data);
+
+
+
+let job_id = data.job_id;
+
+
+
+checkProgress(job_id);
+
+
 
 }
+
+
+
+
+
+async function checkProgress(job_id){
+
+
+let timer = setInterval(async()=>{
+
+
+let response = await fetch(
+
+API_URL + "/status/" + job_id
 
 );
 
@@ -62,12 +87,26 @@ console.log(data);
 
 
 
-if(response.ok){
+document.getElementById("status").innerHTML =
+data.status;
+
+
+
+document.getElementById("progress").value =
+data.progress;
+
+
+
+
+if(data.progress == 100){
+
+
+clearInterval(timer);
 
 
 
 document.getElementById("status").innerHTML =
-"VIDEO SAVED ✅";
+"Completed ✅";
 
 
 
@@ -82,7 +121,7 @@ API_URL + "/download-video";
 
 
 download.innerHTML =
-"Download Dubbed Video";
+"Download Video";
 
 
 
@@ -93,30 +132,9 @@ download.style.display =
 
 }
 
-else{
 
 
-document.getElementById("status").innerHTML =
-"Server Error ❌";
-
-
-}
-
-
-
-}
-
-catch(error){
-
-
-console.log(error);
-
-
-document.getElementById("status").innerHTML =
-"Connection Error ❌";
-
-
-}
+},3000);
 
 
 
