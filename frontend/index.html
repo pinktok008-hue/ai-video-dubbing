@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <title>AI Video Dubbing</title>
@@ -8,10 +9,14 @@
 
 </head>
 
+
 <body>
 
 
-<h1>AI Video Dubbing</h1>
+<div class="container">
+
+
+<h1>🎬 AI Video Dubbing</h1>
 
 
 <input 
@@ -19,6 +24,9 @@ type="file"
 id="videoFile"
 accept="video/*"
 />
+
+
+<br><br>
 
 
 <select id="language">
@@ -31,35 +39,59 @@ accept="video/*"
 </select>
 
 
+<br><br>
+
+
 <button onclick="uploadVideo()">
-Start Dubbing
+
+🚀 Start Dubbing
+
 </button>
 
 
+
 <h3 id="status">
+
 Waiting...
+
 </h3>
 
 
-<progress 
+
+<progress
+
 id="progress"
+
 value="0"
+
 max="100">
+
 </progress>
+
 
 
 <br><br>
 
 
-<a 
+<a
+
 id="download"
+
 style="display:none">
+
 Download Video
+
 </a>
+
+
+
+</div>
+
 
 
 <script src="script.js"></script>
 
 
 </body>
+
 </html>
