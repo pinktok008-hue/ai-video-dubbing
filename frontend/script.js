@@ -11,19 +11,17 @@ const language =
 document.getElementById("language").value;
 
 
+
 if(!file){
-    alert("Video select karo");
-    return;
+alert("Select video first");
+return;
 }
 
 
 
 let formData = new FormData();
 
-formData.append(
-    "video",
-    file
-);
+formData.append("video",file);
 
 
 
@@ -31,16 +29,31 @@ document.getElementById("status").innerHTML =
 "Uploading...";
 
 
+
 let response = await fetch(
 
 API_URL + "/dub-video?language=" + language,
 
 {
+
 method:"POST",
+
 body:formData
+
 }
 
 );
+
+
+
+if(!response.ok){
+
+document.getElementById("status").innerHTML =
+"Server Error ❌";
+
+return;
+
+}
 
 
 
@@ -68,10 +81,10 @@ checkProgress(job_id);
 async function checkProgress(job_id){
 
 
-let timer = setInterval(async()=>{
+let interval = setInterval(async()=>{
 
 
-let response = await fetch(
+let res = await fetch(
 
 API_URL + "/status/" + job_id
 
@@ -79,7 +92,7 @@ API_URL + "/status/" + job_id
 
 
 
-let data = await response.json();
+let data = await res.json();
 
 
 
@@ -88,32 +101,31 @@ console.log(data);
 
 
 document.getElementById("status").innerHTML =
+
 data.status;
 
 
 
-let percent = data.progress;
-
-
-let blocks = Math.floor(percent / 10);
-
-
-let bar =
-"█".repeat(blocks) +
-"░".repeat(10 - blocks);
+let percent = data.progress || 0;
 
 
 
-document.getElementById("progressText").innerHTML =
-bar + " " + percent + "%";
+document.getElementById("progress").value =
+percent;
+
+
+
+document.getElementById("percent").innerHTML =
+percent + "%";
 
 
 
 
-if(data.progress == 100){
+
+if(percent >=100){
 
 
-clearInterval(timer);
+clearInterval(interval);
 
 
 
@@ -146,7 +158,7 @@ download.style.display =
 
 
 
-},3000);
+},2000);
 
 
 
