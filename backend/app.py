@@ -517,15 +517,12 @@ async def dub_video(
 
 
 
-    jobs[job_id] = {
+    jobs[job_id].update({
+    "status": "VIDEO SAVED",
+    "progress": 20
+})
 
-        "status": "video uploaded",
-
-        "progress": 20
-
-    }
-    
-    print("VIDEO SAVED", flush=True)
+print("VIDEO SAVED", flush=True)
 
 
 
@@ -575,13 +572,10 @@ async def dub_video(
     )
 
     
-    jobs[job_id] = {
-
-        "status": "translation done",
-
-        "progress": 50
-
-    }
+    jobs[job_id].update({
+    "status": "TRANSCRIPTION DONE",
+    "progress": 50
+})
 
 
 
@@ -601,13 +595,10 @@ async def dub_video(
 
 
 
-    jobs[job_id] = {
-
-        "status": "translation done",
-
-        "progress": 65
-
-    }
+    jobs[job_id].update({
+    "status": "TRANSLATION DONE",
+    "progress": 65
+})
 
 
 
@@ -628,15 +619,12 @@ async def dub_video(
 
 
 
-    jobs[job_id] = {
+    jobs[job_id].update({
+    "status":"TTS DONE",
+    "progress":80
+})
 
-        "status": "voice generated",
-
-        "progress": 80
-
-    }
-    
-    print("TTS DONE", flush=True)
+print("TTS DONE", flush=True)
 
 
 
@@ -682,13 +670,6 @@ async def dub_video(
     )
 
     
-    jobs[job_id] = {
-
-        "status": "translation done",
-
-        "progress": 65
-
-    }
 
 
 
@@ -706,17 +687,12 @@ async def dub_video(
 
 
 
-    jobs[job_id] = {
+    jobs[job_id].update({
+    "status":"MERGE DONE",
+    "progress":100
+})
 
-        "status": "completed",
-
-        "progress": 100,
-
-        "video": output_video
-
-    }
-    
-    print("MERGE DONE", flush=True)
+print("MERGE DONE", flush=True)
 
 
     return {
