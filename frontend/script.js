@@ -1,121 +1,56 @@
-const API =
-"https://ai-video-dubbing.onrender.com";
+const API_URL = "https://ai-video-dubbing.onrender.com";
 
 
 async function uploadVideo(){
 
+const file =
+document.getElementById("videoFile").files[0];
 
-let file =
-document.getElementById(
-"videoFile"
-).files[0];
-
-
-let language =
-document.getElementById(
-"language"
-).value;
+const language =
+document.getElementById("language").value;
 
 
+let formData = new FormData();
 
-let formData =
-new FormData();
-
-
-formData.append(
-"video",
-file
-);
+formData.append("video",file);
 
 
-formData.append(
-"language",
-language
-);
+document.getElementById("status").innerHTML =
+"Uploading...";
 
 
-
-let response =
-await fetch(
-API + "/dub-video",
+let response = await fetch(
+API_URL + "/dub-video?language=" + language,
 {
 method:"POST",
 body:formData
-}
-);
+});
 
 
-
-let data =
-await response.json();
+let data = await response.json();
 
 
-checkStatus(
-data.job_id
-);
+console.log(data);
 
 
-}
+document.getElementById("status").innerHTML =
+"Completed";
 
 
-
-async function checkStatus(job_id){
-
-
-let timer =
-setInterval(async()=>{
+let download =
+document.getElementById("download");
 
 
-let response =
-await fetch(
-API + "/status/" + job_id
-);
+download.href =
+API_URL + "/download-video";
 
 
-
-let data =
-await response.json();
-
+download.innerHTML =
+"Download Video";
 
 
-document.getElementById(
-"status"
-).innerHTML =
-data.status;
-
-
-
-document.getElementById(
-"progress"
-).value =
-data.progress;
-
-
-
-if(data.progress == 100){
-
-
-clearInterval(timer);
-
-
-let link =
-document.getElementById(
-"download"
-);
-
-
-link.href =
-API + "/download-video";
-
-
-link.style.display =
+download.style.display =
 "block";
-
-
-}
-
-
-},3000);
 
 
 }
