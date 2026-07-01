@@ -361,7 +361,7 @@ async def dub_video(
 
 
 
-            jobs[job_id].update({
+    jobs[job_id].update({
         "status": "VIDEO SAVED",
         "progress": 20
     })
@@ -463,13 +463,12 @@ async def dub_video(
 
 
 
-        jobs[job_id].update({
+    jobs[job_id].update({
         "status":"TTS DONE",
         "progress":80
     })
 
     print("TTS DONE", flush=True)
-
 
 
 
@@ -531,7 +530,7 @@ async def dub_video(
 
 
 
-        jobs[job_id].update({
+    jobs[job_id].update({
         "status":"MERGE DONE",
         "progress":100
     })
