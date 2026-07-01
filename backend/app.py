@@ -517,12 +517,12 @@ async def dub_video(
 
 
 
-    jobs[job_id].update({
-    "status": "VIDEO SAVED",
-    "progress": 20
-})
+            jobs[job_id].update({
+        "status": "VIDEO SAVED",
+        "progress": 20
+    })
 
-print("VIDEO SAVED", flush=True)
+    print("VIDEO SAVED", flush=True)
 
 
 
@@ -619,12 +619,12 @@ print("VIDEO SAVED", flush=True)
 
 
 
-    jobs[job_id].update({
-    "status":"TTS DONE",
-    "progress":80
-})
+        jobs[job_id].update({
+        "status":"TTS DONE",
+        "progress":80
+    })
 
-print("TTS DONE", flush=True)
+    print("TTS DONE", flush=True)
 
 
 
@@ -687,12 +687,12 @@ print("TTS DONE", flush=True)
 
 
 
-    jobs[job_id].update({
-    "status":"MERGE DONE",
-    "progress":100
-})
+        jobs[job_id].update({
+        "status":"MERGE DONE",
+        "progress":100
+    })
 
-print("MERGE DONE", flush=True)
+    print("MERGE DONE", flush=True)
 
 
     return {
