@@ -414,6 +414,15 @@ async def dub_video(
 
     )
 
+    
+    jobs[job_id] = {
+
+        "status": "translation done",
+
+        "progress": 50
+
+    }
+
 
 
 
@@ -436,7 +445,7 @@ async def dub_video(
 
         "status": "translation done",
 
-        "progress": 60
+        "progress": 65
 
     }
 
@@ -511,6 +520,15 @@ async def dub_video(
         "dubbed_video.mp4"
 
     )
+
+    
+    jobs[job_id] = {
+
+        "status": "translation done",
+
+        "progress": 65
+
+    }
 
 
 
