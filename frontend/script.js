@@ -92,8 +92,20 @@ data.status;
 
 
 
-document.getElementById("progress").value =
-data.progress;
+let percent = data.progress;
+
+
+let blocks = Math.floor(percent / 10);
+
+
+let bar =
+"█".repeat(blocks) +
+"░".repeat(10 - blocks);
+
+
+
+document.getElementById("progressText").innerHTML =
+bar + " " + percent + "%";
 
 
 
