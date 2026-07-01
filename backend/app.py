@@ -17,6 +17,21 @@ from services.audio_cleaner import remove_original_audio
 
 app = FastAPI()
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
+app.add_middleware(
+
+CORSMiddleware,
+
+allow_origins=["*"],
+
+allow_methods=["*"],
+
+allow_headers=["*"],
+
+)
+
 
 jobs = {}
 
