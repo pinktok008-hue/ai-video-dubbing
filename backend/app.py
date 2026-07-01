@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, BackgroundTasks
 from fastapi.responses import FileResponse
 
 import os
@@ -35,6 +35,166 @@ allow_headers=["*"],
 
 jobs = {}
 
+
+async def process_video(job_id, video_path, language):
+
+
+    # AUDIO EXTRACTION
+
+    jobs[job_id] = {
+        "status":"Extracting audio...",
+        "progress":30
+    }
+
+
+    audio_name = "audio.wav"
+
+
+    audio_path = os.path.join(
+        AUDIO_FOLDER,
+        audio_name
+    )
+
+
+    extract_audio(
+        video_path,
+        audio_path
+    )
+
+
+
+    # TRANSCRIPTION
+
+
+    jobs[job_id] = {
+        "status":"Transcribing...",
+        "progress":45
+    }
+
+
+    transcription = transcribe_audio(
+        audio_path
+    )
+
+
+
+
+    # TRANSLATION
+
+
+    jobs[job_id] = {
+        "status":"Translation done",
+        "progress":60
+    }
+
+
+
+    translation = translate_text(
+
+        transcription["text"],
+
+        language
+
+    )
+
+
+
+
+    # TTS
+
+
+    jobs[job_id] = {
+
+        "status":"Generating AI voice...",
+
+        "progress":80
+
+    }
+
+
+
+    speech = await generate_speech(
+
+        translation["translated_text"],
+
+        language
+
+    )
+
+
+
+
+    # REMOVE ORIGINAL AUDIO
+
+
+    jobs[job_id] = {
+
+        "status":"Cleaning video",
+
+        "progress":90
+
+    }
+
+
+
+    clean_video = os.path.join(
+
+        VIDEO_FOLDER,
+
+        "clean_video.mp4"
+
+    )
+
+
+
+    remove_original_audio(
+
+        video_path,
+
+        clean_video
+
+    )
+
+
+
+
+    # MERGE
+
+
+    output_video = os.path.join(
+
+        VIDEO_FOLDER,
+
+        "dubbed_video.mp4"
+
+    )
+
+
+
+    merge_video_audio(
+
+        clean_video,
+
+        speech["audio_file"],
+
+        output_video
+
+    )
+
+
+
+
+    jobs[job_id] = {
+
+
+        "status":"MERGE DONE",
+
+        "progress":100,
+
+        "video":output_video
+
+
+    }
 
 
 UPLOAD_FOLDER = "uploads"
