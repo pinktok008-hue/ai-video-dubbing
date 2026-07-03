@@ -41,7 +41,8 @@ async function checkProgress(job_id) {
 
         let data = await response.json();
 
-        document.getElementById("status").innerHTML = data.status;
+        document.getElementById("status").innerHTML =
+data.status + " (" + data.progress + "%)";
 
         document.getElementById("progress").value = data.progress;
 
