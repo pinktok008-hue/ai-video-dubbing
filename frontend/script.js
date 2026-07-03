@@ -69,6 +69,14 @@ async function checkProgress(job_id, button) {
         document.getElementById("percent").innerHTML =
             data.progress + "%";
 
+        let remaining =
+Math.ceil((100 - data.progress) * 2);
+
+document.getElementById("eta").innerHTML =
+"⏳ Estimated Time Remaining: " +
+remaining +
+" sec";
+
         if (data.progress >= 100) {
 
             clearInterval(timer);
