@@ -1,165 +1,67 @@
 const API_URL = "https://ai-video-dubbing.onrender.com";
 
+async function uploadVideo() {
 
-async function uploadVideo(){
+    const file = document.getElementById("videoFile").files[0];
+    const language = document.getElementById("language").value;
 
-const file =
-document.getElementById("videoFile").files[0];
+    if (!file) {
+        alert("Please select a video.");
+        return;
+    }
 
+    let formData = new FormData();
+    formData.append("video", file);
 
-const language =
-document.getElementById("language").value;
+    document.getElementById("status").innerHTML = "Uploading...";
 
+    let response = await fetch(
+        API_URL + "/dub-video?language=" + language,
+        {
+            method: "POST",
+            body: formData
+        }
+    );
 
+    let data = await response.json();
 
-if(!file){
-alert("Select video first");
-return;
+    const job_id = data.job_id;
+
+    checkProgress(job_id);
 }
 
 
+async function checkProgress(job_id) {
 
-let formData = new FormData();
+    const timer = setInterval(async () => {
 
-formData.append("video",file);
+        let response = await fetch(
+            API_URL + "/status/" + job_id
+        );
 
+        let data = await response.json();
 
+        document.getElementById("status").innerHTML = data.status;
 
-document.getElementById("status").innerHTML =
-"Uploading...";
+        document.getElementById("progress").value = data.progress;
 
+        document.getElementById("percent").innerHTML =
+            data.progress + "%";
 
+        if (data.progress >= 100) {
 
-let response = await fetch(
+            clearInterval(timer);
 
-API_URL + "/dub-video?language=" + language,
+            const download = document.getElementById("download");
 
-{
+            download.href =
+                API_URL + "/download-video/" + job_id;
 
-method:"POST",
+            download.innerHTML = "Download Video";
 
-body:formData
+            download.style.display = "block";
+        }
 
-}
-
-);
-
-
-
-if(!response.ok){
-
-document.getElementById("status").innerHTML =
-"Server Error ❌";
-
-return;
-
-}
-
-
-
-let data = await response.json();
-
-
-console.log(data);
-
-
-
-let job_id = data.job_id;
-
-
-
-checkProgress(job_id);
-
-
-
-}
-
-
-
-
-
-async function checkProgress(job_id){
-
-
-let interval = setInterval(async()=>{
-
-
-let res = await fetch(
-
-API_URL + "/status/" + job_id
-
-);
-
-
-
-let data = await res.json();
-
-
-
-console.log(data);
-
-
-
-document.getElementById("status").innerHTML =
-
-data.status;
-
-
-
-let percent = data.progress || 0;
-
-
-
-document.getElementById("progress").value =
-percent;
-
-
-
-document.getElementById("percent").innerHTML =
-percent + "%";
-
-
-
-
-
-if(percent >=100){
-
-
-clearInterval(interval);
-
-
-
-document.getElementById("status").innerHTML =
-"Completed ✅";
-
-
-
-let download =
-document.getElementById("download");
-
-
-
-download.href =
-API_URL + "/download-video";
-
-
-
-download.innerHTML =
-"Download Video";
-
-
-
-download.style.display =
-"block";
-
-
-
-}
-
-
-
-},2000);
-
-
+    }, 2000);
 
 }
