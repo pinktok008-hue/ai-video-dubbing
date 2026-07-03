@@ -63,8 +63,8 @@ async function checkProgress(job_id, button) {
         document.getElementById("status").innerHTML =
             data.status + " (" + data.progress + "%)";
 
-        document.getElementById("progress").value =
-            data.progress;
+        document.getElementById("progress-bar").style.width =
+    data.progress + "%";
 
         document.getElementById("percent").innerHTML =
             data.progress + "%";
