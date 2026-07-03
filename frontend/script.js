@@ -12,11 +12,14 @@ async function uploadVideo() {
     }
 
     button.disabled = true;
-    button.innerHTML = "Processing...";
+    button.innerHTML = "⏳ Processing...";
 
-    document.getElementById("progress").value = 0;
+    document.getElementById("progress-bar").style.width = "0%";
     document.getElementById("percent").innerHTML = "0%";
     document.getElementById("status").innerHTML = "Uploading...";
+    document.getElementById("eta").innerHTML = "⏳ Calculating...";
+
+    document.getElementById("download").style.display = "none";
 
     const formData = new FormData();
     formData.append("video", file);
@@ -24,7 +27,7 @@ async function uploadVideo() {
     try {
 
         const response = await fetch(
-            API_URL + "/dub-video?language=" + language,
+            API_URL + "/dub-video?language=" + encodeURIComponent(language),
             {
                 method: "POST",
                 body: formData
@@ -33,20 +36,23 @@ async function uploadVideo() {
 
         const data = await response.json();
 
+        if (!data.job_id) {
+            throw new Error("Job ID not received from server.");
+        }
+
         checkProgress(data.job_id, button);
 
     } catch (error) {
 
+        console.error(error);
+
         button.disabled = false;
         button.innerHTML = "🚀 Start Dubbing";
 
-        document.getElementById("status").innerHTML =
-            "Upload Failed";
+        document.getElementById("status").innerHTML = "❌ Upload Failed";
 
-        alert(error);
-
+        alert("Upload failed. Please try again.");
     }
-
 }
 
 
@@ -54,50 +60,86 @@ async function checkProgress(job_id, button) {
 
     const timer = setInterval(async () => {
 
-        const response = await fetch(
-            API_URL + "/status/" + job_id
-        );
+        try {
 
-        const data = await response.json();
+            const response = await fetch(
+                API_URL + "/status/" + job_id
+            );
 
-        document.getElementById("status").innerHTML =
-            data.status + " (" + data.progress + "%)";
+            const data = await response.json();
 
-        document.getElementById("progress-bar").style.width =
-    data.progress + "%";
+            if (data.error) {
+                clearInterval(timer);
+                button.disabled = false;
+                button.innerHTML = "🚀 Start Dubbing";
 
-        document.getElementById("percent").innerHTML =
-            data.progress + "%";
+                document.getElementById("status").innerHTML = data.error;
+                return;
+            }
 
-        let remaining =
-Math.ceil((100 - data.progress) * 2);
+            document.getElementById("status").innerHTML =
+                data.status + " (" + data.progress + "%)";
 
-document.getElementById("eta").innerHTML =
-"⏳ Estimated Time Remaining: " +
-remaining +
-" sec";
+            document.getElementById("progress-bar").style.width =
+                data.progress + "%";
 
-        if (data.progress >= 100) {
+            document.getElementById("percent").innerHTML =
+                data.progress + "%";
+
+            let remaining = Math.max(
+                0,
+                Math.ceil((100 - data.progress) * 2)
+            );
+
+            if (data.progress < 100) {
+
+                document.getElementById("eta").innerHTML =
+                    "⏳ Estimated Time Remaining: " +
+                    remaining +
+                    " sec";
+
+            } else {
+
+                document.getElementById("eta").innerHTML =
+                    "✅ Finished";
+
+            }
+
+            if (data.progress >= 100) {
+
+                clearInterval(timer);
+
+                document.getElementById("status").innerHTML =
+                    "✅ Dubbing Completed";
+
+                const download =
+                    document.getElementById("download");
+
+                download.href =
+                    API_URL + "/download-video";
+
+                download.innerHTML =
+                    "⬇ Download Video";
+
+                download.style.display =
+                    "inline-block";
+
+                button.disabled = false;
+                button.innerHTML =
+                    "🚀 Start Dubbing";
+            }
+
+        } catch (error) {
 
             clearInterval(timer);
 
-            document.getElementById("status").innerHTML =
-                "✅ Dubbing Completed";
-
-            const download =
-                document.getElementById("download");
-
-            download.href =
-                API_URL + "/download-video/" + job_id;
-
-            download.style.display = "block";
-
-            download.innerHTML =
-                "⬇ Download Video";
+            console.error(error);
 
             button.disabled = false;
-            button.innerHTML =
-                "🚀 Start Dubbing";
+            button.innerHTML = "🚀 Start Dubbing";
+
+            document.getElementById("status").innerHTML =
+                "❌ Connection Lost";
         }
 
     }, 1000);
