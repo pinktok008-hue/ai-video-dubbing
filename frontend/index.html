@@ -1,86 +1,475 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-    <title>AI Video Dubbing</title>
+<title>AI Video Dubbing</title>
 
-    <link rel="stylesheet" href="style.css">
+<link rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="style.css">
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="background">
 
-    <h1>🎬 AI Video Dubbing</h1>
+<div class="blur blur1"></div>
 
-    <input
-        type="file"
-        id="videoFile"
-        accept="video/*">
+<div class="blur blur2"></div>
 
-    <br><br>
-
-    <select id="language">
-
-        <option value="Hindi">Hindi</option>
-
-        <option value="English">English</option>
-
-        <option value="German">German</option>
-
-        <option value="French">French</option>
-
-    </select>
-
-    <br><br>
-
-    <button onclick="uploadVideo()">
-
-        🚀 Start Dubbing
-
-    </button>
-
-    <br><br>
-
-    <h3 id="status">
-
-        Waiting...
-
-    </h3>
-
-    <div class="progress-container">
-
-    <div
-        id="progress-bar"
-        class="progress-bar">
-    </div>
+<div class="blur blur3"></div>
 
 </div>
 
-<p id="percent">0%</p>
+<!-- ================= NAVBAR ================= -->
 
-<p id="eta">
-⏳ Calculating...
+<nav class="navbar">
+
+<div class="logo">
+
+🎬 AI Video Dubbing
+
+</div>
+
+<ul>
+
+<li><a href="#">Home</a></li>
+
+<li><a href="#features">Features</a></li>
+
+<li><a href="#upload">Upload</a></li>
+
+<li><a href="#result">Result</a></li>
+
+</ul>
+
+</nav>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+<h1>
+
+Translate Any Video Into Any Language
+
+</h1>
+
+<p>
+
+Powered by Artificial Intelligence
+
 </p>
 
-    <br>
+<div class="hero-buttons">
 
-    <a
-        id="download"
-        style="display:none;">
+<button class="primary">
 
-        Download Video
+Start AI
 
-    </a>
+</button>
+
+<button class="secondary">
+
+Watch Demo
+
+</button>
 
 </div>
+
+</section>
+
+<!-- ================= FEATURES ================= -->
+
+<section
+class="features"
+id="features">
+
+<div class="card">
+
+<h2>🎤</h2>
+
+<h3>
+
+Original Voice Clone
+
+</h3>
+
+<p>
+
+Keep the original voice while translating.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>👄</h2>
+
+<h3>
+
+Lip Sync
+
+</h3>
+
+<p>
+
+Perfect AI mouth synchronization.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>🌍</h2>
+
+<h3>
+
+100+ Languages
+
+</h3>
+
+<p>
+
+Dub videos into multiple languages.
+
+</p>
+
+</div>
+
+<div class="card">
+
+<h2>🎵</h2>
+
+<h3>
+
+Keep Music & SFX
+
+</h3>
+
+<p>
+
+Only voices are replaced.
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ================= UPLOAD ================= -->
+
+<section
+class="upload-section"
+id="upload">
+
+<div class="upload-card">
+
+<h2>
+
+Upload Your Video
+
+</h2>
+
+<p>
+
+Drag & Drop or Browse
+
+</p>
+
+<input
+
+type="file"
+
+id="videoFile"
+
+accept="video/*"
+
+>
+
+<label
+
+for="videoFile"
+
+class="browse">
+
+Browse Files
+
+</label>
+
+<div
+class="settings">
+
+<div>
+
+<label>
+
+Language
+
+</label>
+
+<select
+id="language">
+
+<option>Hindi</option>
+
+<option>English</option>
+
+<option>German</option>
+
+<option>French</option>
+
+<option>Spanish</option>
+
+<option>Japanese</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>
+
+Voice
+
+</label>
+
+<select>
+
+<option>
+
+Original Voice
+
+</option>
+
+<option>
+
+Male AI
+
+</option>
+
+<option>
+
+Female AI
+
+</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>
+
+Subtitle
+
+</label>
+
+<select>
+
+<option>
+
+ON
+
+</option>
+
+<option>
+
+OFF
+
+</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>
+
+Lip Sync
+
+</label>
+
+<select>
+
+<option>
+
+ON
+
+</option>
+
+<option>
+
+OFF
+
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button
+
+id="startBtn"
+
+onclick="uploadVideo()"
+
+class="start">
+
+🚀 Start Dubbing
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ================= PROCESS ================= -->
+
+<section
+class="process">
+
+<h2>
+
+AI Processing
+
+</h2>
+
+<div class="progress-box">
+
+<div
+class="progress-bar">
+
+<div
+
+class="progress-fill"
+
+id="progress-bar">
+
+</div>
+
+</div>
+
+<h1
+id="percent">
+
+0%
+
+</h1>
+
+<h3
+id="status">
+
+Waiting...
+
+</h3>
+
+<p
+id="eta">
+
+Estimated Time Remaining
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ================= PREVIEW ================= -->
+
+<section
+class="preview"
+id="result">
+
+<div class="video-card">
+
+<h2>
+
+Original Video
+
+</h2>
+
+<video
+
+id="originalPreview"
+
+controls>
+
+</video>
+
+</div>
+
+<div class="video-card">
+
+<h2>
+
+Dubbed Video
+
+</h2>
+
+<video
+
+id="dubbedPreview"
+
+controls>
+
+</video>
+
+</div>
+
+</section>
+
+<!-- ================= DOWNLOAD ================= -->
+
+<section
+class="download">
+
+<a
+
+id="download"
+
+style="display:none">
+
+⬇ Download Dubbed Video
+
+</a>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+<p>
+
+© 2026 AI Video Dubbing
+
+</p>
+
+</footer>
 
 <script src="script.js"></script>
 
