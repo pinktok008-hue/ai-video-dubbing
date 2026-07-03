@@ -1,84 +1,39 @@
 body{
-
-font-family:Arial;
-
-background:#111;
-
-color:white;
-
-text-align:center;
-
-}
-
-
-
-.container{
-
-margin-top:80px;
-
-}
-
-
-
-input,select,button{
-
-padding:12px;
-
-margin:10px;
-
-border-radius:8px;
-
-}
-
-
-
-button{
-
-background:#e91e63;
-
-color:white;
-
-border:none;
-
-cursor:pointer;
-
-}
-
-
-
-progress{
-
-width:300px;
-
-height:25px;
-
-}
-
-
-
-a{
-
-color:#00ff99;
-
-font-size:20px;
-
-}
-
-body{
     font-family:Arial;
+    background:#111;
+    color:white;
     text-align:center;
     margin-top:40px;
 }
 
-progress{
-    width:90%;
-    height:30px;
+.container{
+    margin-top:80px;
 }
 
-#percent{
-    font-size:22px;
-    font-weight:bold;
-    color:#2196F3;
+input,
+select,
+button{
+    padding:12px;
+    margin:10px;
+    border-radius:8px;
+}
+
+button{
+    background:#E91E63;
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-size:18px;
+}
+
+button:hover{
+    opacity:0.9;
+}
+
+progress{
+    width:90%;
+    max-width:500px;
+    height:30px;
 }
 
 #status{
@@ -86,8 +41,15 @@ progress{
     margin-top:20px;
 }
 
-button{
-    padding:12px 25px;
-    font-size:18px;
-    cursor:pointer;
+#percent{
+    font-size:22px;
+    font-weight:bold;
+    color:#00FF99;
+    margin-top:10px;
+}
+
+a{
+    color:#00FF99;
+    font-size:20px;
+    text-decoration:none;
 }
