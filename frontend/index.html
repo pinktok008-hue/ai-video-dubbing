@@ -3,92 +3,83 @@
 
 <head>
 
-<title>AI Video Dubbing</title>
+    <meta charset="UTF-8">
 
-<link rel="stylesheet" href="style.css">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AI Video Dubbing</title>
+
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
-
 <body>
-
 
 <div class="container">
 
+    <h1>🎬 AI Video Dubbing</h1>
 
-<h1>🎬 AI Video Dubbing</h1>
+    <input
+        type="file"
+        id="videoFile"
+        accept="video/*">
 
+    <br><br>
 
-<input 
-type="file"
-id="videoFile"
-accept="video/*"
-/>
+    <select id="language">
 
+        <option value="Hindi">Hindi</option>
 
-<br><br>
+        <option value="English">English</option>
 
+        <option value="German">German</option>
 
-<select id="language">
+        <option value="French">French</option>
 
-<option>Hindi</option>
-<option>English</option>
-<option>German</option>
-<option>French</option>
+    </select>
 
-</select>
+    <br><br>
 
+    <button onclick="uploadVideo()">
 
-<br><br>
+        🚀 Start Dubbing
 
+    </button>
 
-<button onclick="uploadVideo()">
+    <br><br>
 
-🚀 Start Dubbing
+    <h3 id="status">
 
-</button>
+        Waiting...
 
+    </h3>
 
+    <progress
+        id="progress"
+        value="0"
+        max="100">
+    </progress>
 
-<h3 id="status">
+    <p id="percent">
 
-Waiting...
+        0%
 
-</h3>
+    </p>
 
+    <br>
 
+    <a
+        id="download"
+        style="display:none;">
 
-<progress 
-id="progress"
-value="0"
-max="100">
-</progress>
+        Download Video
 
-<p id="percent">0%</p>
-
-
-
-<br><br>
-
-
-<a
-
-id="download"
-
-style="display:none">
-
-Download Video
-
-</a>
-
-
+    </a>
 
 </div>
 
-
-
 <script src="script.js"></script>
-
 
 </body>
 
