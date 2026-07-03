@@ -63,3 +63,31 @@ color:#00ff99;
 font-size:20px;
 
 }
+
+body{
+    font-family:Arial;
+    text-align:center;
+    margin-top:40px;
+}
+
+progress{
+    width:90%;
+    height:30px;
+}
+
+#percent{
+    font-size:22px;
+    font-weight:bold;
+    color:#2196F3;
+}
+
+#status{
+    font-size:20px;
+    margin-top:20px;
+}
+
+button{
+    padding:12px 25px;
+    font-size:18px;
+    cursor:pointer;
+}
