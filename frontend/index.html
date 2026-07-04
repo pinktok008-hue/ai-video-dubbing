@@ -5,7 +5,8 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
+<meta
+name="viewport"
 content="width=device-width, initial-scale=1.0">
 
 <title>AI Video Dubbing</title>
@@ -21,19 +22,26 @@ crossorigin>
 rel="stylesheet">
 
 <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<link rel="stylesheet"
 href="style.css">
 
 </head>
 
 <body>
 
-<div class="background">
+<!-- ================= BACKGROUND ================= -->
 
-<div class="blur blur1"></div>
+<div class="bg">
 
-<div class="blur blur2"></div>
+<div class="circle c1"></div>
 
-<div class="blur blur3"></div>
+<div class="circle c2"></div>
+
+<div class="circle c3"></div>
+
+<div class="grid"></div>
 
 </div>
 
@@ -43,21 +51,61 @@ href="style.css">
 
 <div class="logo">
 
-🎬 AI Video Dubbing
+<i class="fa-solid fa-wand-magic-sparkles"></i>
+
+<span>AI Video Dubbing</span>
 
 </div>
 
 <ul>
 
-<li><a href="#">Home</a></li>
+<li>
 
-<li><a href="#features">Features</a></li>
+<a href="#">
 
-<li><a href="#upload">Upload</a></li>
+Home
 
-<li><a href="#result">Result</a></li>
+</a>
+
+</li>
+
+<li>
+
+<a href="#features">
+
+Features
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#upload">
+
+Upload
+
+</a>
+
+</li>
+
+<li>
+
+<a href="#result">
+
+Result
+
+</a>
+
+</li>
 
 </ul>
+
+<button class="nav-btn">
+
+Dashboard
+
+</button>
 
 </nav>
 
@@ -65,31 +113,149 @@ href="style.css">
 
 <section class="hero">
 
+<div class="hero-left">
+
+<div class="tag">
+
+AI Powered
+
+</div>
+
 <h1>
 
-Translate Any Video Into Any Language
+Translate Any Video Into
+
+<span>
+
+Any Language
+
+</span>
 
 </h1>
 
 <p>
 
-Powered by Artificial Intelligence
+Professional AI Video Dubbing
+
+Voice Clone
+
+Lip Sync
+
+Subtitle Translation
+
+100+ Languages
 
 </p>
 
 <div class="hero-buttons">
 
-<button class="primary">
+<button
+class="primary">
 
-Start AI
+<i class="fa-solid fa-play"></i>
+
+Start Dubbing
+
+</button>
+
+<button
+class="secondary">
+
+<i class="fa-solid fa-circle-info"></i>
+
+Learn More
 
 </button>
 
-<button class="secondary">
+</div>
 
-Watch Demo
+<div class="stats">
 
-</button>
+<div>
+
+<h2>
+
+100+
+
+</h2>
+
+<p>
+
+Languages
+
+</p>
+
+</div>
+
+<div>
+
+<h2>
+
+99%
+
+</h2>
+
+<p>
+
+Accuracy
+
+</p>
+
+</div>
+
+<div>
+
+<h2>
+
+AI
+
+</h2>
+
+<p>
+
+Voice Clone
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="hero-right">
+
+<div class="preview-card">
+
+<div class="preview-header">
+
+<div class="dot red"></div>
+
+<div class="dot yellow"></div>
+
+<div class="dot green"></div>
+
+</div>
+
+<div class="preview-body">
+
+<i class="fa-solid fa-film"></i>
+
+<h2>
+
+AI Processing
+
+</h2>
+
+<p>
+
+Ready For Upload
+
+</p>
+
+</div>
+
+</div>
 
 </div>
 
@@ -98,100 +264,171 @@ Watch Demo
 <!-- ================= FEATURES ================= -->
 
 <section
-class="features"
-id="features">
+id="features"
+class="features">
 
-<div class="card">
+<h1>
 
-<h2>🎤</h2>
+Powerful AI Features
 
-<h3>
+</h1>
 
-Original Voice Clone
+<div class="feature-grid">
 
-</h3>
+<div class="feature-card">
 
-<p>
-
-Keep the original voice while translating.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<h2>👄</h2>
-
-<h3>
-
-Lip Sync
-
-</h3>
-
-<p>
-
-Perfect AI mouth synchronization.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<h2>🌍</h2>
-
-<h3>
-
-100+ Languages
-
-</h3>
-
-<p>
-
-Dub videos into multiple languages.
-
-</p>
-
-</div>
-
-<div class="card">
-
-<h2>🎵</h2>
-
-<h3>
-
-Keep Music & SFX
-
-</h3>
-
-<p>
-
-Only voices are replaced.
-
-</p>
-
-</div>
-
-</section>
-
-<!-- ================= UPLOAD ================= -->
-
-<section
-class="upload-section"
-id="upload">
-
-<div class="upload-card">
+<i class="fa-solid fa-microphone-lines"></i>
 
 <h2>
 
-Upload Your Video
+Voice Clone
 
 </h2>
 
 <p>
 
-Drag & Drop or Browse
+Clone Original Voice
+
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fa-solid fa-mouth"></i>
+
+<h2>
+
+Lip Sync
+
+</h2>
+
+<p>
+
+Perfect Synchronization
+
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fa-solid fa-earth-asia"></i>
+
+<h2>
+
+100+ Languages
+
+</h2>
+
+<p>
+
+Translate Anywhere
+
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fa-solid fa-music"></i>
+
+<h2>
+
+Background Music
+
+</h2>
+
+<p>
+
+Music Preserved
+
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fa-solid fa-users"></i>
+
+<h2>
+
+Multiple Speakers
+
+</h2>
+
+<p>
+
+AI Detects Speakers
+
+</p>
+
+</div>
+
+<div class="feature-card">
+
+<i class="fa-solid fa-clock"></i>
+
+<h2>
+
+Long Videos
+
+</h2>
+
+<p>
+
+Supports Hours
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CONTINUE... -->
+
+<!-- ================= UPLOAD SECTION ================= -->
+
+<section
+id="upload"
+class="upload-section">
+
+<div class="upload-container">
+
+<div class="upload-left">
+
+<h1>
+
+Upload Your Video
+
+</h1>
+
+<p>
+
+Drag & Drop your video or click Browse.
+
+Supported Formats:
+
+MP4 • MOV • AVI • MKV
+
+</p>
+
+<div
+class="upload-box">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<h2>
+
+Drop Video Here
+
+</h2>
+
+<p>
+
+or
 
 </p>
 
@@ -203,22 +440,33 @@ id="videoFile"
 
 accept="video/*"
 
->
+hidden>
 
-<label
+<button
 
-for="videoFile"
+onclick="document.getElementById('videoFile').click()"
 
-class="browse">
+class="browse-btn">
 
 Browse Files
 
-</label>
+</button>
 
-<div
-class="settings">
+</div>
 
-<div>
+</div>
+
+<div class="upload-right">
+
+<div class="glass-card">
+
+<h2>
+
+AI Settings
+
+</h2>
+
+<div class="setting">
 
 <label>
 
@@ -226,8 +474,7 @@ Language
 
 </label>
 
-<select
-id="language">
+<select id="language">
 
 <option>Hindi</option>
 
@@ -237,15 +484,15 @@ id="language">
 
 <option>French</option>
 
-<option>Spanish</option>
-
 <option>Japanese</option>
+
+<option>Spanish</option>
 
 </select>
 
 </div>
 
-<div>
+<div class="setting">
 
 <label>
 
@@ -277,7 +524,7 @@ Female AI
 
 </div>
 
-<div>
+<div class="setting">
 
 <label>
 
@@ -303,7 +550,7 @@ OFF
 
 </div>
 
-<div>
+<div class="setting">
 
 <label>
 
@@ -329,63 +576,119 @@ OFF
 
 </div>
 
-</div>
-
 <button
 
 id="startBtn"
 
 onclick="uploadVideo()"
 
-class="start">
+class="start-btn">
 
-🚀 Start Dubbing
+<i class="fa-solid fa-play"></i>
+
+Start AI Dubbing
 
 </button>
 
 </div>
 
+</div>
+
+</div>
+
 </section>
 
-<!-- ================= PROCESS ================= -->
+<!-- ================= PROCESSING ================= -->
 
 <section
-class="process">
+class="processing">
 
-<h2>
+<h1>
 
 AI Processing
 
-</h2>
+</h1>
 
-<div class="progress-box">
+<div class="processing-card">
 
-<div
-class="progress-bar">
+<div class="timeline">
 
-<div
+<div class="step active">
 
-class="progress-fill"
+<i class="fa-solid fa-upload"></i>
 
-id="progress-bar">
+Uploading
+
+</div>
+
+<div class="step">
+
+<i class="fa-solid fa-waveform"></i>
+
+Extracting Audio
+
+</div>
+
+<div class="step">
+
+<i class="fa-solid fa-language"></i>
+
+Translation
+
+</div>
+
+<div class="step">
+
+<i class="fa-solid fa-microphone-lines"></i>
+
+AI Voice
+
+</div>
+
+<div class="step">
+
+<i class="fa-solid fa-video"></i>
+
+Rendering
 
 </div>
 
 </div>
 
-<h1
+<div class="progress-wrapper">
+
+<div class="progress-circle">
+
+<div
 id="percent">
 
 0%
 
-</h1>
+</div>
 
-<h3
+</div>
+
+<div
+class="progress-line">
+
+<div
+
+id="progress-bar"
+
+class="progress-fill">
+
+</div>
+
+</div>
+
+</div>
+
+<h2
 id="status">
 
 Waiting...
 
-</h3>
+</h2>
 
 <p
 id="eta">
@@ -398,11 +701,21 @@ Estimated Time Remaining
 
 </section>
 
-<!-- ================= PREVIEW ================= -->
+<!-- CONTINUE PART 3 -->
+
+<!-- ================= RESULT ================= -->
 
 <section
-class="preview"
-id="result">
+id="result"
+class="result-section">
+
+<h1>
+
+Dubbed Video
+
+</h1>
+
+<div class="result-grid">
 
 <div class="video-card">
 
@@ -419,6 +732,18 @@ id="originalPreview"
 controls>
 
 </video>
+
+<div class="video-info">
+
+<p>
+
+<i class="fa-solid fa-file-video"></i>
+
+Original Upload
+
+</p>
+
+</div>
 
 </div>
 
@@ -438,24 +763,123 @@ controls>
 
 </video>
 
+<div class="video-info">
+
+<p>
+
+<i class="fa-solid fa-language"></i>
+
+AI Dubbed Version
+
+</p>
+
 </div>
-
-</section>
-
-<!-- ================= DOWNLOAD ================= -->
-
-<section
-class="download">
 
 <a
 
 id="download"
 
+class="download-btn"
+
 style="display:none">
 
-⬇ Download Dubbed Video
+<i class="fa-solid fa-download"></i>
+
+Download Video
 
 </a>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= WHY CHOOSE US ================= -->
+
+<section class="why-us">
+
+<h1>
+
+Why Choose Our AI
+
+</h1>
+
+<div class="why-grid">
+
+<div class="why-card">
+
+<i class="fa-solid fa-bolt"></i>
+
+<h2>
+
+Ultra Fast
+
+</h2>
+
+<p>
+
+High-speed AI processing.
+
+</p>
+
+</div>
+
+<div class="why-card">
+
+<i class="fa-solid fa-brain"></i>
+
+<h2>
+
+Smart AI
+
+</h2>
+
+<p>
+
+Advanced neural dubbing.
+
+</p>
+
+</div>
+
+<div class="why-card">
+
+<i class="fa-solid fa-shield-halved"></i>
+
+<h2>
+
+Secure
+
+</h2>
+
+<p>
+
+Your videos stay private.
+
+</p>
+
+</div>
+
+<div class="why-card">
+
+<i class="fa-solid fa-headphones"></i>
+
+<h2>
+
+Studio Quality
+
+</h2>
+
+<p>
+
+Professional AI voices.
+
+</p>
+
+</div>
+
+</div>
 
 </section>
 
@@ -463,11 +887,103 @@ style="display:none">
 
 <footer>
 
+<div class="footer-container">
+
+<div>
+
+<h2>
+
+AI Video Dubbing
+
+</h2>
+
 <p>
+
+Professional AI Video Translation Platform
+
+</p>
+
+</div>
+
+<div>
+
+<h3>
+
+Features
+
+</h3>
+
+<ul>
+
+<li>
+
+Voice Clone
+
+</li>
+
+<li>
+
+Lip Sync
+
+</li>
+
+<li>
+
+Subtitle Translation
+
+</li>
+
+<li>
+
+100+ Languages
+
+</li>
+
+</ul>
+
+</div>
+
+<div>
+
+<h3>
+
+Support
+
+</h3>
+
+<ul>
+
+<li>
+
+Privacy Policy
+
+</li>
+
+<li>
+
+Terms
+
+</li>
+
+<li>
+
+Contact
+
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="copyright">
 
 © 2026 AI Video Dubbing
 
-</p>
+All Rights Reserved
+
+</div>
 
 </footer>
 
