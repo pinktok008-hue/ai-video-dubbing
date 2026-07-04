@@ -1,176 +1,252 @@
 const API_URL = "https://ai-video-dubbing.onrender.com";
 
+/* ===========================
+UPLOAD VIDEO
+=========================== */
+
 async function uploadVideo() {
 
     const file = document.getElementById("videoFile").files[0];
+
     const language = document.getElementById("language").value;
+
     const button = document.getElementById("startBtn");
 
     if (!file) {
+
         alert("Please select a video.");
+
         return;
+
     }
 
-    // Show Original Preview
-    const original = document.getElementById("originalPreview");
-    original.src = URL.createObjectURL(file);
+    // Preview Original Video
+    document.getElementById("originalPreview").src =
+        URL.createObjectURL(file);
 
     // Reset UI
-    document.getElementById("progress-bar").style.width = "0%";
-    document.getElementById("percent").innerHTML = "0%";
-    document.getElementById("status").innerHTML = "Uploading...";
-    document.getElementById("eta").innerHTML =
-        "Preparing AI...";
-
-    document.getElementById("download").style.display = "none";
-
     button.disabled = true;
-    button.innerHTML = "Processing...";
+
+    button.innerHTML =
+        "<i class='fa-solid fa-spinner fa-spin'></i> Processing...";
+
+    document.getElementById("status").innerHTML =
+        "Uploading...";
+
+    document.getElementById("eta").innerHTML =
+        "Calculating...";
+
+    document.getElementById("percent").innerHTML =
+        "0%";
+
+    document.getElementById("progress-bar").style.width =
+        "0%";
+
+    document.getElementById("download").style.display =
+        "none";
 
     const formData = new FormData();
+
     formData.append("video", file);
 
     try {
 
         const response = await fetch(
+
             API_URL + "/dub-video?language=" + language,
+
             {
+
                 method: "POST",
+
                 body: formData
+
             }
+
         );
 
         const data = await response.json();
 
         checkProgress(
+
             data.job_id,
+
             button
+
         );
 
     }
 
-    catch (error) {
+    catch (err) {
 
-        alert(error);
+        alert(err);
 
         button.disabled = false;
 
         button.innerHTML =
-            "🚀 Start Dubbing";
+            "Start AI Dubbing";
 
     }
 
 }
 
-
+/* ===========================
+CHECK PROGRESS
+=========================== */
 
 async function checkProgress(job_id, button) {
 
     const timer = setInterval(async () => {
 
-        try {
+        const response = await fetch(
 
-            const response = await fetch(
+            API_URL + "/status/" + job_id
 
-                API_URL + "/status/" + job_id
+        );
 
-            );
+        const data = await response.json();
 
-            const data = await response.json();
+        // Status
+        document.getElementById("status").innerHTML =
+            data.status;
 
-            // Progress Bar
+        // Percent
+        document.getElementById("percent").innerHTML =
+            data.progress + "%";
 
-            document.getElementById(
-                "progress-bar"
-            ).style.width =
-                data.progress + "%";
+        // Progress Line
+        document.getElementById("progress-bar").style.width =
+            data.progress + "%";
 
-            // Percentage
+        // ETA
 
-            document.getElementById(
-                "percent"
-            ).innerHTML =
-                data.progress + "%";
+        let eta = Math.ceil((100 - data.progress) * 2);
 
-            // Status
+        if (eta < 0) eta = 0;
 
-            document.getElementById(
-                "status"
-            ).innerHTML =
-                data.status;
+        document.getElementById("eta").innerHTML =
+            "Estimated Time : " + eta + " sec";
 
-            // ETA
+        // Circle Animation
 
-            let remain = Math.max(
-                0,
-                Math.ceil((100 - data.progress) * 2)
-            );
+        document.querySelector(".progress-circle").style.background =
+            `conic-gradient(
+            #7c5cff ${data.progress * 3.6}deg,
+            rgba(255,255,255,.08) 0deg
+            )`;
 
-            if (data.progress < 100) {
+        // Timeline
 
-                document.getElementById(
-                    "eta"
-                ).innerHTML =
-                    "⏳ " +
-                    remain +
-                    " sec remaining";
+        const steps = document.querySelectorAll(".step");
 
-            }
+        steps.forEach(step => step.classList.remove("active"));
 
-            // Completed
+        if (data.progress < 20)
 
-            if (data.progress >= 100) {
+            steps[0].classList.add("active");
 
-                clearInterval(timer);
+        else if (data.progress < 40)
 
-                document.getElementById(
-                    "status"
-                ).innerHTML =
-                    "✅ Dubbing Completed";
+            steps[1].classList.add("active");
 
-                document.getElementById(
-                    "eta"
-                ).innerHTML =
-                    "Finished";
+        else if (data.progress < 60)
 
-                const download =
-                    document.getElementById(
-                        "download"
-                    );
+            steps[2].classList.add("active");
 
-                download.href =
-                    API_URL +
-                    "/download-video";
+        else if (data.progress < 90)
 
-                download.style.display =
-                    "inline-block";
+            steps[3].classList.add("active");
 
-                // Auto Preview
+        else
 
-                const dubbed =
-                    document.getElementById(
-                        "dubbedPreview"
-                    );
+            steps[4].classList.add("active");
 
-                dubbed.src =
-                    API_URL +
-                    "/download-video";
+        // FINISHED
 
-                button.disabled = false;
+        if (data.progress >= 100) {
 
-                button.innerHTML =
-                    "🚀 Start Dubbing";
+            clearInterval(timer);
 
-            }
+            document.getElementById("status").innerHTML =
+                "✅ AI Dubbing Completed";
 
-        }
+            document.getElementById("eta").innerHTML =
+                "Finished";
 
-        catch (e) {
+            // Download Button
 
-            console.log(e);
+            const download =
+                document.getElementById("download");
+
+            download.href =
+                API_URL + "/download-video";
+
+            download.style.display =
+                "inline-block";
+
+            // Preview Dubbed Video
+
+            document.getElementById("dubbedPreview").src =
+                API_URL + "/download-video";
+
+            button.disabled = false;
+
+            button.innerHTML =
+                '<i class="fa-solid fa-play"></i> Start AI Dubbing';
 
         }
 
     }, 1000);
 
 }
+
+/* ===========================
+DRAG & DROP
+=========================== */
+
+const uploadBox =
+    document.querySelector(".upload-box");
+
+const input =
+    document.getElementById("videoFile");
+
+uploadBox.addEventListener("dragover", e => {
+
+    e.preventDefault();
+
+    uploadBox.style.borderColor = "#00d4ff";
+
+});
+
+uploadBox.addEventListener("dragleave", () => {
+
+    uploadBox.style.borderColor =
+        "rgba(255,255,255,.2)";
+
+});
+
+uploadBox.addEventListener("drop", e => {
+
+    e.preventDefault();
+
+    input.files = e.dataTransfer.files;
+
+    uploadBox.style.borderColor =
+        "rgba(255,255,255,.2)";
+
+});
+
+/* ===========================
+PREVIEW
+=========================== */
+
+input.addEventListener("change", () => {
+
+    if (input.files.length > 0) {
+
+        document.getElementById("originalPreview").src =
+            URL.createObjectURL(input.files[0]);
+
+    }
+
+});
