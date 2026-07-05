@@ -2,6 +2,6 @@ fastapi
 uvicorn
 python-multipart
 ffmpeg-python
-gtts
+edge-tts==6.1.19
 groq
 edge-tts
