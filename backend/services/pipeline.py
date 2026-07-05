@@ -1,9 +1,11 @@
 """
 AI Video Dubbing Pipeline
-Version 2.1
+Version 2.3
 
-This module orchestrates the complete dubbing workflow.
+Complete AI Video Dubbing Workflow
 """
+
+import os
 
 from core.logger import task_log, task_error
 from core.progress_manager import progress_manager
@@ -14,6 +16,7 @@ from services.translation_service import translate_text
 from services.tts_service import generate_speech
 from services.video_merger import merge_video_audio
 from services.audio_cleaner import remove_original_audio
+from services.subtitle_service import subtitle_service
 
 
 class DubbingPipeline:
@@ -26,16 +29,17 @@ class DubbingPipeline:
         clean_video_path: str,
         speech_path: str,
         output_path: str,
-        target_language: str
+        target_language: str,
+        subtitle_path: str | None = None
     ):
 
         try:
 
             task_log(task_id, "Pipeline", "Started")
 
-            # -----------------------------------
+            # -------------------------------
             # Extract Audio
-            # -----------------------------------
+            # -------------------------------
 
             progress_manager.extracting_audio(task_id)
 
@@ -45,9 +49,9 @@ class DubbingPipeline:
                 task_id
             )
 
-            # -----------------------------------
+            # -------------------------------
             # Speech Recognition
-            # -----------------------------------
+            # -------------------------------
 
             progress_manager.transcribing(task_id)
 
@@ -61,9 +65,32 @@ class DubbingPipeline:
                     transcription["message"]
                 )
 
-            # -----------------------------------
+            # -------------------------------
+            # Subtitle Generation
+            # -------------------------------
+
+            if (
+                subtitle_path
+                and
+                "segments" in transcription
+            ):
+
+                progress_manager.update(
+                    task_id,
+                    45,
+                    "Subtitle",
+                    "Generating subtitles..."
+                )
+
+                subtitle_service.generate_srt(
+                    segments=transcription["segments"],
+                    output_path=subtitle_path,
+                    task_id=task_id
+                )
+
+            # -------------------------------
             # Translation
-            # -----------------------------------
+            # -------------------------------
 
             progress_manager.translating(task_id)
 
@@ -79,9 +106,9 @@ class DubbingPipeline:
                     translation["message"]
                 )
 
-            # -----------------------------------
+            # -------------------------------
             # Speech Generation
-            # -----------------------------------
+            # -------------------------------
 
             progress_manager.generating_audio(task_id)
 
@@ -96,9 +123,9 @@ class DubbingPipeline:
                     speech["message"]
                 )
 
-            # -----------------------------------
+            # -------------------------------
             # Remove Original Audio
-            # -----------------------------------
+            # -------------------------------
 
             progress_manager.update(
                 task_id,
@@ -112,9 +139,9 @@ class DubbingPipeline:
                 clean_video_path
             )
 
-            # -----------------------------------
-            # Render
-            # -----------------------------------
+            # -------------------------------
+            # Merge Video
+            # -------------------------------
 
             progress_manager.rendering(task_id)
 
@@ -124,6 +151,10 @@ class DubbingPipeline:
                 output_path=output_path,
                 task_id=task_id
             )
+
+            # -------------------------------
+            # Finish
+            # -------------------------------
 
             progress_manager.completed(
                 task_id,
@@ -136,7 +167,13 @@ class DubbingPipeline:
                 "Completed"
             )
 
-            return output_path
+            return {
+
+                "video": output_path,
+
+                "subtitle": subtitle_path if subtitle_path and os.path.exists(subtitle_path) else None
+
+            }
 
         except Exception as e:
 
