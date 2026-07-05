@@ -1,102 +1,95 @@
-import subprocess
+"""
+AI Video Dubbing Platform
+Version 2.0
+
+Video Merger Service
+"""
+
+from pathlib import Path
 import ffmpeg
 
-
-def build_atempo_filter(speed):
-
-    filters = []
-
-    while speed > 2:
-        filters.append("atempo=2.0")
-        speed /= 2
-
-    while speed < 0.5:
-        filters.append("atempo=0.5")
-        speed *= 2
-
-    filters.append(f"atempo={speed}")
-
-    return ",".join(filters)
-
+from core.logger import task_log, task_error
 
 
 def merge_video_audio(
-    video_path,
-    audio_path,
+    video_path: str,
+    dubbed_audio_path: str,
+    output_path: str,
+    task_id: str | None = None
+) -> str:
+    """
+    Merge dubbed audio with video.
+
+    Parameters
+    ----------
+    video_path
+    dubbed_audio_path
     output_path
-):
 
-    video_info = ffmpeg.probe(video_path)
+    Returns
+    -------
+    output_path
+    """
 
-    video_duration = float(
-        video_info["format"]["duration"]
-    )
+    if not Path(video_path).exists():
+        raise FileNotFoundError(video_path)
 
+    if not Path(dubbed_audio_path).exists():
+        raise FileNotFoundError(dubbed_audio_path)
 
-    audio_info = ffmpeg.probe(audio_path)
+    try:
 
-    audio_duration = float(
-        audio_info["format"]["duration"]
-    )
+        if task_id:
+            task_log(
+                task_id,
+                "Rendering",
+                "Started"
+            )
 
+        video = ffmpeg.input(video_path)
 
-    speed = audio_duration / video_duration
+        audio = ffmpeg.input(dubbed_audio_path)
 
-
-    audio_filter = build_atempo_filter(speed)
-
-
-    command = [
-
-        "ffmpeg",
-
-        "-i",
-        video_path,
-
-        "-i",
-        audio_path,
-
-
-        "-filter:a",
-        audio_filter,
-
-
-        "-map",
-        "0:v:0",
-
-        "-map",
-        "1:a:0",
-
-
-        "-c:v",
-        "copy",
-
-        "-c:a",
-        "aac",
-
-
-        "-shortest",
-
-        "-y",
-
-        output_path
-    ]
-
-
-    result = subprocess.run(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-
-
-    if result.returncode != 0:
-
-        print(result.stderr.decode())
-
-        raise Exception(
-            "FFmpeg audio sync failed"
+        (
+            ffmpeg
+            .output(
+                video.video,
+                audio.audio,
+                output_path,
+                vcodec="copy",
+                acodec="aac",
+                shortest=None
+            )
+            .overwrite_output()
+            .run(
+                capture_stdout=True,
+                capture_stderr=True
+            )
         )
 
+        if task_id:
+            task_log(
+                task_id,
+                "Rendering",
+                "Completed"
+            )
 
-    return output_path
+        return output_path
+
+    except ffmpeg.Error as e:
+
+        error = ""
+
+        if e.stderr:
+            error = e.stderr.decode(
+                errors="ignore"
+            )
+
+        if task_id:
+            task_error(
+                task_id,
+                "Rendering",
+                error
+            )
+
+        raise RuntimeError(error)
