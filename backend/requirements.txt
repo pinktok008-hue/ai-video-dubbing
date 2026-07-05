@@ -5,3 +5,4 @@ ffmpeg-python
 edge-tts==6.1.19
 groq
 edge-tts
+deep-translator
