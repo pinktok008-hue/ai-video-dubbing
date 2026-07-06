@@ -1,97 +1,41 @@
-import os
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
-# ===========================
-# Base Directory
-# ===========================
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 
-# ===========================
-# Project Directories
-# ===========================
+STORAGE_DIR = BASE_DIR / "storage"
 
-UPLOAD_DIR = BASE_DIR / "uploads"
-OUTPUT_DIR = BASE_DIR / "output"
-AUDIO_DIR = BASE_DIR / "audio"
-TEMP_DIR = BASE_DIR / "temp"
+UPLOAD_FOLDER = STORAGE_DIR / "uploads"
 
-# Automatically create folders
-for directory in [
-    UPLOAD_DIR,
-    OUTPUT_DIR,
-    AUDIO_DIR,
-    TEMP_DIR
+OUTPUT_FOLDER = STORAGE_DIR / "outputs"
+
+AUDIO_FOLDER = STORAGE_DIR / "audio"
+
+TEMP_FOLDER = STORAGE_DIR / "temp"
+
+SUBTITLE_FOLDER = STORAGE_DIR / "subtitles"
+
+for folder in [
+    STORAGE_DIR,
+    UPLOAD_FOLDER,
+    OUTPUT_FOLDER,
+    AUDIO_FOLDER,
+    TEMP_FOLDER,
+    SUBTITLE_FOLDER,
 ]:
-    directory.mkdir(parents=True, exist_ok=True)
+    folder.mkdir(parents=True, exist_ok=True)
 
-# ===========================
-# File Upload Settings
-# ===========================
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
-MAX_UPLOAD_SIZE = 5 * 1024 * 1024 * 1024   # 5GB
+DEFAULT_LANGUAGE = os.getenv(
+    "DEFAULT_LANGUAGE",
+    "Hindi"
+)
 
-ALLOWED_VIDEO_EXTENSIONS = {
-    ".mp4",
-    ".mov",
-    ".avi",
-    ".mkv",
-    ".webm"
-}
-
-# ===========================
-# Render Settings
-# ===========================
-
-HOST = "0.0.0.0"
-PORT = int(os.getenv("PORT", 5000))
-
-# ===========================
-# Progress
-# ===========================
-
-PROGRESS_UPDATE_INTERVAL = 1
-
-# ===========================
-# Cleanup
-# ===========================
-
-AUTO_DELETE_TEMP = True
-
-AUTO_DELETE_AFTER_HOURS = 24
-
-# ===========================
-# Logging
-# ===========================
-
-LOG_LEVEL = "INFO"
-
-LOG_FOLDER = BASE_DIR / "logs"
-
-LOG_FOLDER.mkdir(exist_ok=True)
-
-# ===========================
-# AI Services
-# ===========================
-
-ENABLE_WHISPER = False
-
-ENABLE_TRANSLATION = False
-
-ENABLE_VOICE_CLONE = False
-
-ENABLE_LIPSYNC = False
-
-ENABLE_SUBTITLE = False
-
-ENABLE_BGM = False
-
-# ===========================
-# Future GPU
-# ===========================
-
-GPU_ENABLED = False
-
-GPU_DEVICE = "cuda"
-
-CPU_THREADS = os.cpu_count()
+DEFAULT_VOICE = os.getenv(
+    "DEFAULT_VOICE",
+    "en-US-AndrewNeural"
+)
