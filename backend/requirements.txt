@@ -1,7 +1,16 @@
 fastapi
-uvicorn
+uvicorn[standard]
+
 python-multipart
+
 ffmpeg-python
+
 edge-tts==6.1.19
+
 groq
+
 deep-translator
+
+python-dotenv
+
+httpx
