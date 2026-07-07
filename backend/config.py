@@ -9,14 +9,14 @@ BASE_DIR = Path(__file__).resolve().parent
 STORAGE_DIR = BASE_DIR / "storage"
 
 UPLOAD_FOLDER = STORAGE_DIR / "uploads"
-
 OUTPUT_FOLDER = STORAGE_DIR / "outputs"
-
 AUDIO_FOLDER = STORAGE_DIR / "audio"
-
 TEMP_FOLDER = STORAGE_DIR / "temp"
-
 SUBTITLE_FOLDER = STORAGE_DIR / "subtitles"
+
+# NEW
+LOG_FOLDER = STORAGE_DIR / "logs"
+LOG_LEVEL = "INFO"
 
 for folder in [
     STORAGE_DIR,
@@ -25,6 +25,7 @@ for folder in [
     AUDIO_FOLDER,
     TEMP_FOLDER,
     SUBTITLE_FOLDER,
+    LOG_FOLDER,
 ]:
     folder.mkdir(parents=True, exist_ok=True)
 
