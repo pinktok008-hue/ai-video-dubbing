@@ -71,32 +71,38 @@ class TTSService:
         Raises:
             TTSGenerationError: If synthesis fails after all retries.
         """
-        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-
-        
+                Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
         async def _attempt() -> str:
 
-    communicator = edge_tts.Communicate(
-        text=text,
-        voice=voice,
-        rate=rate or self._settings.EDGE_TTS_DEFAULT_RATE,
-        volume=volume or self._settings.EDGE_TTS_DEFAULT_VOLUME,
-        pitch=pitch or self._settings.EDGE_TTS_DEFAULT_PITCH,
-    )
+            communicator = edge_tts.Communicate(
+                text=text,
+                voice=voice,
+                rate=rate or self._settings.EDGE_TTS_DEFAULT_RATE,
+                volume=volume or self._settings.EDGE_TTS_DEFAULT_VOLUME,
+                pitch=pitch or self._settings.EDGE_TTS_DEFAULT_PITCH,
+            )
 
-    try:
-        await asyncio.wait_for(
-            communicator.save(output_path),
-            timeout=self._settings.EDGE_TTS_TIMEOUT_SECONDS,
-        )
+            try:
+                await asyncio.wait_for(
+                    communicator.save(output_path),
+                    timeout=self._settings.EDGE_TTS_TIMEOUT_SECONDS,
+                )
+
             except asyncio.TimeoutError as exc:
                 raise TTSGenerationError(
                     f"Edge TTS timed out after {self._settings.EDGE_TTS_TIMEOUT_SECONDS}s "
                     f"for text: '{text[:60]}...'"
                 ) from exc
-            if not Path(output_path).is_file() or Path(output_path).stat().st_size == 0:
-                raise TTSGenerationError(f"Edge TTS produced an empty file for text: '{text[:60]}...'")
+
+            if (
+                not Path(output_path).is_file()
+                or Path(output_path).stat().st_size == 0
+            ):
+                raise TTSGenerationError(
+                    f"Edge TTS produced an empty file for text: '{text[:60]}...'"
+                )
+
             return output_path
 
         try:
