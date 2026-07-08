@@ -73,20 +73,23 @@ class TTSService:
         """
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-        communicator = edge_tts.Communicate(
-            text=text,
-            voice=voice,
-            rate=rate or self._settings.EDGE_TTS_DEFAULT_RATE,
-            volume=volume or self._settings.EDGE_TTS_DEFAULT_VOLUME,
-            pitch=pitch or self._settings.EDGE_TTS_DEFAULT_PITCH,
-        )
+        
 
         async def _attempt() -> str:
-            try:
-                await asyncio.wait_for(
-                    communicator.save(output_path),
-                    timeout=self._settings.EDGE_TTS_TIMEOUT_SECONDS,
-                )
+
+    communicator = edge_tts.Communicate(
+        text=text,
+        voice=voice,
+        rate=rate or self._settings.EDGE_TTS_DEFAULT_RATE,
+        volume=volume or self._settings.EDGE_TTS_DEFAULT_VOLUME,
+        pitch=pitch or self._settings.EDGE_TTS_DEFAULT_PITCH,
+    )
+
+    try:
+        await asyncio.wait_for(
+            communicator.save(output_path),
+            timeout=self._settings.EDGE_TTS_TIMEOUT_SECONDS,
+        )
             except asyncio.TimeoutError as exc:
                 raise TTSGenerationError(
                     f"Edge TTS timed out after {self._settings.EDGE_TTS_TIMEOUT_SECONDS}s "
