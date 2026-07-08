@@ -44,7 +44,6 @@ class TranscriptionService:
         if self._client is None:
             self._client = Groq(
                 api_key=self._settings.GROQ_API_KEY,
-                base_url=self._settings.GROQ_API_BASE_URL,
                 timeout=self._settings.GROQ_REQUEST_TIMEOUT_SECONDS,
             )
         return self._client
