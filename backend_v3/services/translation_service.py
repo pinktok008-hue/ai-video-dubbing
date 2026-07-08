@@ -112,9 +112,88 @@ class TranslationService:
         return result if result else text
 
     @staticmethod
-    def _normalize_language_code(language_code: str) -> str:
-        """Maps a language code to the form deep-translator expects (falls back to 'auto')."""
-        return language_code if language_code else "auto"
+def _normalize_language_code(language_code: str) -> str:
+    """
+    Normalize language names/codes into deep-translator compatible codes.
+    """
+
+    if not language_code:
+        return "auto"
+
+    language = language_code.strip().lower()
+
+    mapping = {
+        "english": "en",
+        "en": "en",
+
+        "hindi": "hi",
+        "hi": "hi",
+
+        "bengali": "bn",
+        "bn": "bn",
+
+        "urdu": "ur",
+        "ur": "ur",
+
+        "tamil": "ta",
+        "ta": "ta",
+
+        "telugu": "te",
+        "te": "te",
+
+        "marathi": "mr",
+        "mr": "mr",
+
+        "gujarati": "gu",
+        "gu": "gu",
+
+        "kannada": "kn",
+        "kn": "kn",
+
+        "malayalam": "ml",
+        "ml": "ml",
+
+        "punjabi": "pa",
+        "pa": "pa",
+
+        "german": "de",
+        "de": "de",
+
+        "french": "fr",
+        "fr": "fr",
+
+        "spanish": "es",
+        "es": "es",
+
+        "italian": "it",
+        "it": "it",
+
+        "portuguese": "pt",
+        "pt": "pt",
+
+        "russian": "ru",
+        "ru": "ru",
+
+        "japanese": "ja",
+        "ja": "ja",
+
+        "korean": "ko",
+        "ko": "ko",
+
+        "arabic": "ar",
+        "ar": "ar",
+
+        "turkish": "tr",
+        "tr": "tr",
+
+        "chinese": "zh-CN",
+        "chinese (simplified)": "zh-CN",
+        "zh-cn": "zh-CN",
+
+        "auto": "auto",
+    }
+
+    return mapping.get(language, language)
 
     @staticmethod
     def _chunk_text(text: str, max_chars: int) -> List[str]:
