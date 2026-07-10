@@ -19,7 +19,7 @@ groq==0.15.0
 deep-translator==1.11.4
 
 # --- Text-to-Speech --------------------------------------------------------
-edge-tts==7.0.0
+gTTS==2.5.4
 
 # --- HTTP Client (used transitively by groq/edge-tts, pinned for stability)
 httpx==0.28.1
