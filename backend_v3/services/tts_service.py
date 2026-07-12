@@ -1,16 +1,14 @@
 """
 services/tts_service.py
 ==========================
-Synthesizes speech for each translated subtitle segment using Microsoft
-Edge TTS, then assembles the individual segment clips into a single
-continuous audio track that preserves each segment's original start time
-(so the dubbed speech stays roughly synchronized with on-screen action).
 
-Assembly strategy: a silent base track (`anullsrc`) spanning the full
-video duration is generated first, then every segment clip is delayed to
-its original timestamp (`adelay`) and mixed on top (`amix`) via a single
-FFmpeg `filter_complex` graph. This keeps timing anchored to the source
-transcript without requiring per-segment audio stretching.
+Synthesizes speech for translated subtitle segments using the platform's
+modular TTS architecture while remaining backward compatible with the
+existing pipeline.
+
+The service delegates speech generation to the configured TTS engine
+through the shared abstraction layer and assembles all synthesized clips
+into a single synchronized audio track using FFmpeg.
 
 Python: 3.12
 """
@@ -21,93 +19,106 @@ import asyncio
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-import edge_tts
-
 from config import Settings, settings
 from core.file_manager import FileManager
 from core.logger import get_logger
 from core.utils import retry_async, run_command, seconds_to_ms
 from models.task import SubtitleSegment
 
+from services.tts.base import TTSRequest
+from services.tts.manager import TTSManager
+
 logger = get_logger(__name__)
 
 
 class TTSGenerationError(Exception):
-    """Raised when speech synthesis or audio track assembly fails."""
+    """Raised when speech synthesis or audio assembly fails."""
 
 
 class TTSService:
-    """Text-to-speech synthesis and timed audio track assembly via Edge TTS."""
+    """
+    High-level text-to-speech service.
 
-    def __init__(self, app_settings: Settings = settings) -> None:
+    This service is intentionally isolated from individual TTS engine
+    implementations. Engine selection, fallback, validation and health
+    checks are delegated to the TTS manager.
+    """
+
+    def __init__(
+        self,
+        app_settings: Settings = settings,
+        manager: Optional[TTSManager] = None,
+    ) -> None:
         self._settings = app_settings
+        self._manager = manager or TTSManager(app_settings)
 
     # ------------------------------------------------------------------
-    # Per-Segment Synthesis
+    # Per-segment synthesis
     # ------------------------------------------------------------------
+
     async def synthesize_segment(
         self,
         text: str,
         voice: str,
         output_path: str,
+        language: str,
         rate: Optional[str] = None,
         volume: Optional[str] = None,
         pitch: Optional[str] = None,
     ) -> str:
         """
-        Synthesizes a single piece of text into an MP3 file using Edge TTS.
+        Generate speech for a single subtitle segment.
 
         Args:
-            text: The text to synthesize.
-            voice: The Edge TTS voice name (e.g. 'en-US-AriaNeural').
-            output_path: Destination path for the synthesized MP3 clip.
-            rate: Speaking rate adjustment (e.g. '+0%').
-            volume: Volume adjustment (e.g. '+0%').
-            pitch: Pitch adjustment (e.g. '+0Hz').
+            text:
+                Input text.
+            voice:
+                Voice identifier.
+            output_path:
+                Destination audio path.
+            language:
+                Language code.
+            rate:
+                Optional speaking rate.
+            volume:
+                Optional volume.
+            pitch:
+                Optional pitch.
 
         Returns:
-            The `output_path` on success.
-
-        Raises:
-            TTSGenerationError: If synthesis fails after all retries.
+            Generated audio path.
         """
+
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
 
-        resolved_rate = rate or self._settings.EDGE_TTS_DEFAULT_RATE
-        resolved_volume = volume or self._settings.EDGE_TTS_DEFAULT_VOLUME
-        resolved_pitch = pitch or self._settings.EDGE_TTS_DEFAULT_PITCH
+        request = TTSRequest(
+            text=text,
+            language=language,
+            voice=voice,
+            output_path=Path(output_path),
+            metadata={
+                "rate": rate,
+                "volume": volume,
+                "pitch": pitch,
+            },
+        )
 
         async def _attempt() -> str:
-            # NOTE: `edge_tts.Communicate` wraps a single-use network stream.
-            # Once `.save()` (or `.stream()`) has been called on an
-            # instance, that instance cannot be reused -- attempting to
-            # call `.save()` on it again raises "stream can only be
-            # called once". Because `retry_async` may invoke this
-            # coroutine factory multiple times, a brand new
-            # `Communicate` instance MUST be constructed on every single
-            # attempt (including retries). Never hoist this construction
-            # outside of `_attempt()` or share one instance across calls.
-            communicator = edge_tts.Communicate(
-                text=text,
-                voice=voice,
-                rate=resolved_rate,
-                volume=resolved_volume,
-                pitch=resolved_pitch,
-            )
+            response = await self._manager.synthesize(request)
 
-            try:
-                await asyncio.wait_for(
-                    communicator.save(output_path),
-                    timeout=self._settings.EDGE_TTS_TIMEOUT_SECONDS,
-                )
-            except asyncio.TimeoutError as exc:
-                raise TTSGenerationError(
-                    f"Edge TTS timed out after {self._settings.EDGE_TTS_TIMEOUT_SECONDS}s "
-                    f"for text: '{text[:60]}...'"
-                ) from exc
-            if not Path(output_path).is_file() or Path(output_path).stat().st_size == 0:
-                raise TTSGenerationError(f"Edge TTS produced an empty file for text: '{text[:60]}...'")
-            return output_path
+            if not response.success:
+                raise TTSGenerationError(response.error or "Unknown TTS error.")
+
+            if response.output_path is None:
+                raise TTSGenerationError("Engine returned no output path.")
+
+            if (
+                not response.output_path.exists()
+                or response.output_path.stat().st_size == 0
+            ):
+                raise TTSGenerationError("Generated audio file is empty.")
+
+            return str(response.output_path)
 
         try:
             return await retry_async(
@@ -116,137 +127,228 @@ class TTSService:
                 backoff_seconds=1.5,
                 exceptions=(Exception,),
             )
+
         except Exception as exc:  # noqa: BLE001
-            raise TTSGenerationError(f"Edge TTS synthesis failed: {exc}") from exc
+            raise TTSGenerationError(
+                f"TTS synthesis failed: {exc}"
+            ) from exc
 
     async def synthesize_segments(
         self,
         segments: List[SubtitleSegment],
         voice: str,
+        language: str,
         task_id: str,
         file_manager: FileManager,
     ) -> List[Tuple[SubtitleSegment, str]]:
         """
-        Synthesizes every segment's `translated_text` into its own audio
-        clip, storing the resulting path on the segment itself.
-
-        Args:
-            segments: Segments with `translated_text` already populated.
-            voice: The Edge TTS voice name to use for all segments.
-            task_id: The owning task's ID (used to namespace clip files).
-            file_manager: Used to resolve per-segment output paths.
-
-        Returns:
-            A list of (segment, audio_clip_path) tuples, in segment order.
-
-        Raises:
-            TTSGenerationError: If any segment fails to synthesize.
+        Generate speech for every translated subtitle segment.
         """
+
         results: List[Tuple[SubtitleSegment, str]] = []
 
         for segment in segments:
             text = (segment.translated_text or "").strip()
+
             if not text:
-                logger.warning("Segment %s has no translated text; skipping TTS.", segment.index)
+                logger.warning(
+                    "Segment %s has no translated text. Skipping.",
+                    segment.index,
+                )
                 continue
 
-            output_path = str(file_manager.get_segment_audio_path(task_id, segment.index))
-            await self.synthesize_segment(text=text, voice=voice, output_path=output_path)
+            output_path = str(
+                file_manager.get_segment_audio_path(
+                    task_id,
+                    segment.index,
+                )
+            )
 
-            segment.tts_audio_path = output_path
-            results.append((segment, output_path))
+            generated_path = await self.synthesize_segment(
+                text=text,
+                voice=voice,
+                language=language,
+                output_path=output_path,
+            )
+
+            segment.tts_audio_path = generated_path
+
+            results.append(
+                (
+                    segment,
+                    generated_path,
+                )
+            )
 
         if not results:
-            raise TTSGenerationError("No segments were successfully synthesized.")
+            raise TTSGenerationError(
+                "No subtitle segments were synthesized successfully."
+            )
 
-        logger.info("Synthesized %s TTS segment clip(s) for task %s.", len(results), task_id)
+        logger.info(
+            "Synthesized %d subtitle segments.",
+            len(results),
+        )
+
         return results
 
     # ------------------------------------------------------------------
-    # Timed Track Assembly
+    # Audio assembly
     # ------------------------------------------------------------------
+
     async def build_dubbed_audio_track(
-        self,
+            self,
         segments_with_audio: List[Tuple[SubtitleSegment, str]],
         total_duration_seconds: float,
         output_path: str,
     ) -> str:
         """
-        Assembles all per-segment TTS clips into one continuous audio
-        track, positioning each clip at its original segment start time
-        so the dub roughly tracks the source video's timing.
+        Assemble synthesized segment clips into a single synchronized
+        audio track while preserving the original subtitle timing.
 
         Args:
-            segments_with_audio: (segment, audio_clip_path) tuples, in order.
-            total_duration_seconds: Duration of the source video, used to
-                size the base silent track and trim the final output.
-            output_path: Destination path for the assembled audio track.
+            segments_with_audio:
+                List of (segment, audio_path) tuples.
+            total_duration_seconds:
+                Total source video duration.
+            output_path:
+                Destination audio file.
 
         Returns:
-            The `output_path` on success.
+            Path to the generated audio track.
 
         Raises:
-            TTSGenerationError: If FFmpeg fails to assemble the track.
+            TTSGenerationError:
+                If FFmpeg fails to assemble the final track.
         """
+
         if not segments_with_audio:
-            raise TTSGenerationError("Cannot build an audio track from zero synthesized segments.")
+            raise TTSGenerationError(
+                "Cannot assemble audio without synthesized segments."
+            )
 
-        Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-        safe_duration = max(total_duration_seconds, 1.0)
+        Path(output_path).parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
 
-        command: List[str] = [self._settings.FFMPEG_BINARY, "-y"]
+        safe_duration = max(
+            total_duration_seconds,
+            1.0,
+        )
 
-        # Input 0: a full-length silent base track, guaranteeing the final
-        # output spans the entire video duration even if the last segment
-        # ends before the video does.
-        command += [
-            "-f", "lavfi",
-            "-t", f"{safe_duration:.3f}",
-            "-i", "anullsrc=channel_layout=mono:sample_rate=24000",
+        command: list[str] = [
+            self._settings.FFMPEG_BINARY,
+            "-y",
+            "-f",
+            "lavfi",
+            "-t",
+            f"{safe_duration:.3f}",
+            "-i",
+            "anullsrc=channel_layout=mono:sample_rate=24000",
         ]
 
-        # Inputs 1..N: each synthesized segment clip.
-        for _segment, clip_path in segments_with_audio:
-            command += ["-i", clip_path]
+        for _, clip_path in segments_with_audio:
+            command.extend(
+                [
+                    "-i",
+                    clip_path,
+                ]
+            )
 
-        filter_parts: List[str] = []
-        mix_labels: List[str] = ["0:a"]
+        filter_parts: list[str] = []
+        mix_labels: list[str] = ["0:a"]
 
-        for position, (segment, _clip_path) in enumerate(segments_with_audio, start=1):
+        for index, (segment, _) in enumerate(
+            segments_with_audio,
+            start=1,
+        ):
             delay_ms = seconds_to_ms(segment.start)
-            label = f"a{position}"
-            filter_parts.append(f"[{position}:a]adelay={delay_ms}|{delay_ms}[{label}]")
+
+            label = f"a{index}"
+
+            filter_parts.append(
+                f"[{index}:a]"
+                f"adelay={delay_ms}|{delay_ms}"
+                f"[{label}]"
+            )
+
             mix_labels.append(label)
 
-        mix_inputs = "".join(f"[{label}]" for label in mix_labels)
+        input_labels = "".join(
+            f"[{label}]"
+            for label in mix_labels
+        )
+
         filter_parts.append(
-            f"{mix_inputs}amix=inputs={len(mix_labels)}:duration=first:dropout_transition=0,"
-            f"volume={len(mix_labels)}[aout]"
+            (
+                f"{input_labels}"
+                f"amix="
+                f"inputs={len(mix_labels)}:"
+                f"duration=first:"
+                f"dropout_transition=0,"
+                f"volume={len(mix_labels)}"
+                f"[aout]"
+            )
         )
 
         filter_complex = ";".join(filter_parts)
 
-        command += [
-            "-filter_complex", filter_complex,
-            "-map", "[aout]",
-            "-t", f"{safe_duration:.3f}",
-            "-c:a", "aac",
-            "-b:a", self._settings.OUTPUT_AUDIO_BITRATE,
-        ]
-        if self._settings.FFMPEG_THREADS > 0:
-            command += ["-threads", str(self._settings.FFMPEG_THREADS)]
-        command.append(output_path)
-
-        logger.info("Assembling dubbed audio track for %s segment(s) -> %s", len(segments_with_audio), output_path)
-
-        return_code, _stdout, stderr = await run_command(
-            command, timeout_seconds=self._settings.FFMPEG_TIMEOUT_SECONDS
+        command.extend(
+            [
+                "-filter_complex",
+                filter_complex,
+                "-map",
+                "[aout]",
+                "-t",
+                f"{safe_duration:.3f}",
+                "-c:a",
+                "aac",
+                "-b:a",
+                self._settings.OUTPUT_AUDIO_BITRATE,
+            ]
         )
 
-        if return_code != 0 or not Path(output_path).is_file():
-            raise TTSGenerationError(
-                f"Failed to assemble dubbed audio track. FFmpeg stderr: {stderr[-1500:]}"
+        if self._settings.FFMPEG_THREADS > 0:
+            command.extend(
+                [
+                    "-threads",
+                    str(self._settings.FFMPEG_THREADS),
+                ]
             )
 
-        logger.info("Dubbed audio track assembly complete: %s", output_path)
+        command.append(output_path)
+
+        logger.info(
+            "Building dubbed audio track with %d synthesized segment(s).",
+            len(segments_with_audio),
+        )
+
+        return_code, stdout, stderr = await run_command(
+            command,
+            timeout_seconds=self._settings.FFMPEG_TIMEOUT_SECONDS,
+        )
+
+        if return_code != 0:
+            logger.error(
+                "FFmpeg audio assembly failed.\nSTDOUT:\n%s\nSTDERR:\n%s",
+                stdout,
+                stderr,
+            )
+
+            raise TTSGenerationError(
+                "Failed to assemble dubbed audio track."
+            )
+
+        if not Path(output_path).exists():
+            raise TTSGenerationError(
+                "FFmpeg completed but no output audio file was produced."
+            )
+
+        logger.info(
+            "Dubbed audio successfully generated: %s",
+            output_path,
+        )
+
         return output_path
+
