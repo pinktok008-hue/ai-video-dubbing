@@ -1,0 +1,41 @@
+# ==========================================================================
+# AI Video Dubbing Platform V3.0 - Python Dependencies
+# Python 3.12
+# ==========================================================================
+
+# --- Web Framework -----------------------------------------------------
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# --- Configuration & Validation -----------------------------------------
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# --- Speech-to-Text (Groq Whisper API) ----------------------------------
+groq==0.15.0
+
+# --- Translation ----------------------------------------------------------
+deep-translator==1.11.4
+
+# --- Text-to-Speech: core engines (Render-Free-safe) ------------------------
+# 'gTTS' is the default engine (DEFAULT_TTS_ENGINE=gtts) -- zero-config, no
+# API key or binary required. 'edge-tts' and 'azure-cognitiveservices-speech'
+# are optional engines, both light enough to ship in the default image.
+# Piper and XTTS are intentionally NOT listed here -- see
+# requirements-optional.txt and MIGRATION_V3.1.md.
+edge-tts==7.0.0
+gTTS==2.5.4
+azure-cognitiveservices-speech==1.42.0
+# ElevenLabs has no separate SDK dependency -- it is called directly via the
+# 'httpx' client already pinned below.
+
+# --- HTTP Client (used transitively by groq/edge-tts, and directly by the
+# elevenlabs TTS engine; pinned for stability)
+httpx==0.28.1
+
+# --- Async File I/O ---------------------------------------------------------
+aiofiles==24.1.0
+
+# --- Environment Variable Loading -------------------------------------------
+python-dotenv==1.0.1
