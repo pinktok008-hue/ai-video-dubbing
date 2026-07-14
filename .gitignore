@@ -1,0 +1,74 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Environment Variables
+.env
+.env.local
+.env.*
+
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Temporary Files
+temp/
+tmp/
+cache/
+
+# Uploads
+uploads/
+downloads/
+
+# Output Files
+outputs/
+generated/
+dubbed_videos/
+audio_output/
+
+# FFmpeg Temporary Files
+*.wav
+*.pcm
+*.tmp
+
+# Test Coverage
+.coverage
+htmlcov/
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+*.bak
+*.swp
