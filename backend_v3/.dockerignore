@@ -1,0 +1,50 @@
+# ==========================================================================
+# AI Video Dubbing Platform V3.0 - Docker Build Context Exclusions
+# ==========================================================================
+
+# Version control
+.git
+.gitignore
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+
+# Runtime storage (populated at runtime; must not be baked into the image)
+storage/uploads/*
+storage/outputs/*
+storage/audio/*
+storage/temp/*
+storage/subtitles/*
+storage/logs/*
+!storage/uploads/.gitkeep
+!storage/outputs/.gitkeep
+!storage/audio/.gitkeep
+!storage/temp/.gitkeep
+!storage/subtitles/.gitkeep
+!storage/logs/.gitkeep
+
+# Editor / OS metadata
+.vscode/
+.idea/
+.DS_Store
+
+# Docs
+README.md
+*.md
