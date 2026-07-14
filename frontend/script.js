@@ -1,4 +1,4 @@
-const API_URL = "https://ai-video-dubbing.onrender.com";
+const API_URL = "https://ai-video-dubbing-1.onrender.com";
 
 /* ===========================
 UPLOAD VIDEO
