@@ -1,255 +1,309 @@
 # AI Video Dubbing Platform V3.2 LTS
 ## Production Specification
 
-## Goal
+## Project Goal
 
-Build a production-ready AI Video Dubbing Platform that runs on Render Free Plan by default while keeping the architecture future-proof for premium features.
+Build a completely production-ready AI Video Dubbing Platform that runs on the Render Free Plan by default while maintaining a modular architecture that can later scale to paid cloud providers without major code changes.
 
-The platform must preserve the original background music and sound effects while replacing only spoken dialogue with translated speech.
+The platform must preserve the original video's background music and sound effects while replacing only the spoken voice with translated speech.
 
-The project must use a modular architecture where every service is independent and easily replaceable.
+The project must be production quality.
+No demo code.
+No placeholder implementations.
+No mock features.
+No unfinished TODOs.
 
 ---
 
-# Core Requirements
+# Core Objectives
 
-- FastAPI backend
-- Python 3.12
-- FFmpeg
-- FFprobe
-- Groq Whisper
-- deep-translator
-- Multiple TTS Engine Architecture
-- Render Free compatible
-- Production-ready code
-- Fully modular
-- No duplicate logic
-- No dead code
-- Complete error handling
-- Logging
-- Retry system
-- Health checks
+- Production Ready
+- Modular Architecture
+- Multi-TTS Engine
+- Future Proof
+- Render Free Compatible
+- Fully Open Source
+- Easy Deployment
+- API First
+- Long Video Support
 
 ---
 
 # Supported TTS Engines
 
-Default:
-
-- gTTS
-
-Optional:
-
-- Edge TTS
-- Azure Speech
-- Piper
-- XTTS
-- ElevenLabs
-
-Architecture must allow future engines without changing pipeline code.
-
----
-
-# Engine Fallback
-
-Configurable fallback chain.
-
-Example
+## Default
 
 gTTS
 
-↓
+## Fallback Order
 
-Edge
+1. Edge TTS
+2. Azure Speech
+3. Piper
+4. XTTS
+5. ElevenLabs
 
-↓
+Fallback must happen automatically.
 
-Azure
-
-↓
-
-Piper
-
-↓
-
-XTTS
-
-↓
-
-ElevenLabs
-
-Automatic fallback when an engine fails.
-
-Unavailable engines must be skipped automatically.
+If one engine fails,
+the next engine must automatically continue.
 
 ---
 
-# Voice Processing
+# Audio Quality Requirements
 
-Every engine output must pass through the same audio enhancement pipeline.
+Every generated voice must automatically pass through an audio enhancement pipeline.
 
-Pipeline includes
+Pipeline:
 
-- Loudness normalization
-- Silence trimming
-- Fade in
-- Fade out
-- Compressor
+- Loudness Normalization
+- Silence Trimming
+- Dynamic Range Compression
+- Equalizer
 - Limiter
-- EQ
-- Volume balancing
-- Noise cleanup (voice only)
-- Sample rate normalization
-- Bitrate normalization
+- Volume Matching
+- Fade In
+- Fade Out
+- Sample Rate Normalization
+- Bitrate Normalization
+- Mono/Stereo Handling
 
-Every engine must produce consistent output quality.
-
----
-
-# Voice Selection
-
-If an engine supports voice selection
-
-Use requested voice.
-
-If not
-
-Ignore voice safely.
-
-Never fail because voice selection is unsupported.
+No manual configuration required.
 
 ---
 
-# Voice Overlap Fix
+# Voice Replacement
 
-Current overlapping speech issue must be completely fixed.
+The platform must replace ONLY the spoken voice.
 
-Speech timing must be aligned.
+Original:
 
-Long speech must never overlap with next dialogue.
+- Background Music
+- Ambient Sound
+- Environmental Audio
+- Sound Effects
 
-Handle
+must remain unchanged.
 
-- speech stretching
-- silence insertion
-- gap correction
-- duration alignment
-
----
-
-# Background Music Preservation
-
-Original BGM must remain.
-
-Original SFX must remain.
-
-Only spoken dialogue should be replaced.
-
-Do not mute entire audio.
-
-Dialogue separation must be modular for future upgrades.
-
-Current implementation may use audio ducking where required.
-
-Architecture must support future AI source separation.
+Only dialogue should be replaced.
 
 ---
 
-# Subtitle
+# Voice Isolation
 
-Generate
+Voice must be separated from background audio.
 
-Original subtitles
+Use open-source models only.
 
-Translated subtitles
+Must support:
 
-Support
+- UVR
+- Demucs
+- Hybrid separation
 
-SRT
-
-Future support
-
-ASS
-
-VTT
+Architecture must allow future model upgrades.
 
 ---
 
 # Translation
 
-Support
+Support automatic translation.
 
-Auto language detection
+Supported:
 
-Manual language
+- Google Translator
+- Deep Translator
 
-Segment translation
+Architecture should allow future translation engines.
 
-Retry
+---
 
-Validation
+# Speech Recognition
+
+Default:
+
+Groq Whisper
+
+Architecture should support future Whisper providers.
+
+---
+
+# Subtitle Support
+
+Generate:
+
+- Original SRT
+- Translated SRT
+
+Optional subtitle embedding.
+
+---
+
+# Video Processing
+
+Use FFmpeg.
+
+Support:
+
+- MP4
+- MOV
+- AVI
+- MKV
+- WEBM
+
+Maintain original video quality.
 
 ---
 
 # Long Video Support
 
-Support videos up to
+Must support:
 
-2 hours
+- 5 minutes
+- 10 minutes
+- 30 minutes
+- 1 hour
+- 2 hours
 
-Pipeline must avoid loading everything into RAM.
-
-Use streaming.
-
-Chunk processing.
-
-Incremental writing.
-
-Disk-based temporary files.
+without redesigning the architecture.
 
 ---
 
-# Performance
+# Performance Optimizations
 
-Pipeline should process independent segments concurrently.
+Implement:
 
-Use configurable worker pool.
+- Parallel Processing
+- Async Processing
+- Queue Processing
+- Segment Processing
+- Streaming File Processing
+- Memory Efficient Processing
+- Incremental File Writing
+- Temporary File Cleanup
 
-Avoid memory explosion.
+Avoid loading entire video into RAM.
 
-Use async wherever possible.
+---
 
-Limit FFmpeg threads.
+# Processing Pipeline
 
-Reuse resources.
+Upload
+
+↓
+
+Validation
+
+↓
+
+Audio Extraction
+
+↓
+
+Voice Separation
+
+↓
+
+Speech Recognition
+
+↓
+
+Translation
+
+↓
+
+Subtitle Generation
+
+↓
+
+Speech Synthesis
+
+↓
+
+Audio Enhancement
+
+↓
+
+Voice Alignment
+
+↓
+
+Dubbed Audio Assembly
+
+↓
+
+Background Audio Merge
+
+↓
+
+Final Video Render
+
+↓
+
+Cleanup
+
+---
+
+# Voice Alignment
+
+Prevent:
+
+- Voice overlap
+- Speech collision
+- Timing drift
+- Double speech
+
+Speech must align with subtitle timing.
+
+---
+
+# Future Features (Architecture Ready)
+
+Architecture must already support:
+
+- Lip Sync
+- Voice Cloning
+- Multi Speaker Detection
+- Speaker Identification
+- Speaker Mapping
+- Emotion Transfer
+- Streaming API
+- Batch Processing
+- GPU Processing
+- Distributed Workers
+
+Implementation is optional.
+
+Architecture support is mandatory.
 
 ---
 
 # Render Free Compatibility
 
-Everything must run on Render Free.
+Current implementation must work on Render Free Plan.
 
-No GPU dependency.
+Do NOT require:
 
-No paid API dependency.
+- GPU
+- Paid APIs
+- Paid Storage
 
-No premium services required.
-
-Optional engines remain optional.
+Optional premium engines may require user configuration.
 
 ---
 
-# Upload
+# API Requirements
 
-Large uploads
+REST API
 
-Resume-safe
+Endpoints:
 
-Validation
-
-Cleanup
-
-Automatic expiration
+- Upload
+- Task Status
+- Download
+- Supported Languages
+- Engine List
+- Health Check
 
 ---
 
@@ -257,172 +311,73 @@ Automatic expiration
 
 Structured logging.
 
-Every stage logged.
+Error logging.
 
-Every failure logged.
+Progress logging.
 
-Every retry logged.
+Pipeline stage logging.
 
-Every fallback logged.
-
-Every FFmpeg command logged.
+Engine logging.
 
 ---
 
 # Error Handling
 
-User-friendly errors.
+Every stage must fail gracefully.
 
-Internal detailed logs.
+Automatic fallback where applicable.
 
-Retry transient failures.
+Return meaningful error messages.
 
-Graceful failure.
-
-Never crash FastAPI.
-
----
-
-# Health API
-
-Health endpoint
-
-Engine endpoint
-
-Version endpoint
-
-Pipeline diagnostics
-
----
-
-# Future Premium Ready
-
-Architecture must support later addition of
-
-Lip Sync
-
-Voice Cloning
-
-Speaker Diarization
-
-Multi Speaker Dubbing
-
-Emotion Transfer
-
-Voice Conversion
-
-AI Translation
-
-Automatic Speaker Detection
-
-Real Dialogue Isolation
-
-Music Stem Separation
-
-Streaming TTS
-
-Without changing architecture.
-
----
-
-# Current Bugs That MUST Be Fixed
-
-Fix gTTS voice selection issue.
-
-Fix Edge TTS compatibility issues.
-
-Fix 403 handling.
-
-Improve retry logic.
-
-Fix overlapping speech.
-
-Improve audio timing.
-
-Improve synchronization.
-
-Improve FFmpeg robustness.
-
-Improve temporary file cleanup.
-
-Improve error reporting.
+Never crash the server.
 
 ---
 
 # Code Quality
 
-100% production quality.
+Python 3.12
 
-No placeholders.
+Type hints everywhere.
 
-No TODOs.
+Modular architecture.
 
 No duplicate logic.
 
 No dead code.
 
-PEP8 compliant.
+No circular imports.
 
-Type hints everywhere.
-
-Complete documentation.
+Production-ready documentation.
 
 ---
 
-# Testing
+# Testing Requirements
 
-Verify
+Before release verify:
 
-All imports
-
-All endpoints
-
-All engines
-
-Fallback chain
-
-FFmpeg
-
-FFprobe
-
-Pipeline
-
-Audio merge
-
-Video merge
-
-Subtitle generation
-
-Translation
-
-Long video
-
-Health APIs
-
-Render deployment
-
-Complete end-to-end verification before final delivery.
+- All imports
+- All endpoints
+- All engines
+- Audio pipeline
+- Video pipeline
+- FFmpeg
+- FFprobe
+- Render deployment
+- Long video processing
+- Fallback chain
+- Voice replacement
+- Background audio preservation
 
 ---
 
-# Deliverables
+# Current Version Target
 
-Complete rewritten files only.
+AI Video Dubbing Platform V3.2 LTS
 
-No patches.
+Production Ready
 
-No snippets.
+Long Video Ready
 
-No partial implementations.
+Future Ready
 
-Every modified file must be provided in full.
-
-Every change must be verified before completion.
-
-Final delivery must include
-
-- Updated source code
-- Updated requirements
-- Updated documentation
-- Updated migration notes
-- Verification report
+Render Free Ready
