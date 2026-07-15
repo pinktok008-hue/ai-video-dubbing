@@ -4,67 +4,99 @@
 
 ## Permanent Development Instructions
 
-This document defines the permanent development rules for this repository.
+This document defines the permanent development rules for the entire repository.
 
-Every future implementation must follow these instructions.
+These instructions are permanent and apply to every future implementation, refactor, migration, optimization, bug fix, feature addition, and code review.
+
+Unless explicitly instructed otherwise, these rules always take priority.
 
 ---
 
-# PRIMARY OBJECTIVE
+# PROJECT OBJECTIVE
 
-Build and maintain a production-grade AI Video Dubbing Platform.
+Build and maintain a production-grade AI Video Dubbing Platform that is:
 
-Priorities
+- Stable
+- Reliable
+- Modular
+- Maintainable
+- Extensible
+- Backward Compatible
+- Render Free Compatible
+- Production Ready
 
-1. Stability
+Primary goals:
 
-2. Reliability
+1. Reliability
+2. Audio Quality
+3. Video Quality
+4. Performance
+5. Scalability
+6. Developer Experience
+7. Future Expandability
 
-3. Maintainability
+---
 
-4. Modularity
+# DEVELOPMENT PRINCIPLES
 
-5. Extensibility
+Always prefer
 
-6. Backward Compatibility
+- Clean Architecture
+- SOLID Principles
+- DRY
+- KISS
+- Dependency Injection
+- Composition over Inheritance
+- Async Programming
+- Config Driven Development
 
-7. Render Free Compatibility
+Never sacrifice maintainability for short-term convenience.
 
 ---
 
 # BEFORE WRITING CODE
 
-Never immediately start coding.
+Never immediately begin implementation.
 
 Always perform:
 
-1. Architecture audit
+1. Architecture Audit
+2. Dependency Audit
+3. Import Audit
+4. Circular Dependency Check
+5. Existing Feature Audit
+6. Impact Analysis
+7. Migration Plan
+8. Rollback Strategy
+9. Verification Plan
 
-2. Dependency audit
-
-3. Import audit
-
-4. Impact analysis
-
-5. Migration plan
-
-6. Verification plan
-
-Only then begin implementation.
+Only after these steps begin implementation.
 
 ---
 
-# FILE MODIFICATIONS
+# IMPLEMENTATION RULES
 
-Never provide partial patches.
+Never generate
 
-Never provide diff-only changes.
+- Placeholder code
+- TODO implementations
+- Pseudo code
+- Mock production logic
+- Temporary hacks
+
+Always produce
+
+- Complete files
+- Production-ready implementations
+- Fully typed code
+- Complete documentation
+- Working implementations
 
 Whenever a file changes:
 
-Rewrite the complete file.
+Rewrite the entire file.
 
-Every rewritten file must remain production ready.
+Never provide partial patches unless explicitly requested.
 
 ---
 
@@ -72,50 +104,120 @@ Every rewritten file must remain production ready.
 
 Never break existing APIs.
 
-Never rename public endpoints unless explicitly requested.
+Never remove existing endpoints.
 
-Never remove existing functionality without providing a migration path.
+Never rename public APIs.
 
----
+Never silently change behavior.
 
-# CONFIGURATION
+Always provide migration compatibility.
 
-Never hardcode
-
-API Keys
-
-Timeouts
-
-Paths
-
-Voice Names
-
-Engine Names
-
-Retry Counts
-
-Bitrates
-
-Sample Rates
-
-Everything configurable belongs in config.py.
+Older clients should continue working whenever technically possible.
 
 ---
 
-# TTS ENGINE RULES
+# CONFIGURATION RULES
+
+Never hardcode:
+
+- API Keys
+- URLs
+- Paths
+- Timeouts
+- Retry Counts
+- Voice Names
+- Engine Names
+- Sample Rates
+- Bitrates
+- Thread Counts
+- Cache Sizes
+- Audio Parameters
+- FFmpeg Commands
+
+Everything configurable belongs inside:
+
+config.py
+
+or
+
+Settings
+
+---
+
+# PYTHON STANDARDS
+
+Target Version
+
+Python 3.12
+
+Requirements
+
+- Full Type Hints
+- Dataclasses where appropriate
+- Async/Await
+- pathlib
+- Context Managers
+- Exception Chaining
+- Logging
+- Structured Errors
+
+Avoid
+
+- Global mutable state
+- Wildcard imports
+- Circular imports
+- Duplicate logic
+
+---
+
+# PROJECT ARCHITECTURE
+
+The project must remain modular.
+
+Presentation Layer
+
+↓
+
+API Layer
+
+↓
+
+Pipeline Layer
+
+↓
+
+Services
+
+↓
+
+Engine Managers
+
+↓
+
+Concrete Engines
+
+↓
+
+External Services
+
+Every module must have one responsibility.
+
+---
+
+# TTS ARCHITECTURE
 
 Supported engines
 
 - gTTS
-- Edge
-- Azure
+- Edge TTS
+- Azure Speech
 - Piper
 - XTTS
 - ElevenLabs
 
 Future engines
 
-- OpenAI
+- OpenAI TTS
 - Fish Speech
 - Kokoro
 - StyleTTS2
@@ -123,23 +225,60 @@ Future engines
 - F5-TTS
 - CosyVoice
 
-Rules
+Every engine must implement
 
-Every engine must implement BaseTTSEngine.
+BaseTTSEngine
 
-Engine selection must always pass through TTSEngineManager.
+Engine selection must always happen through
 
-No engine-specific logic should exist inside pipeline.py.
+TTSEngineManager
+
+No engine-specific logic may exist inside
+
+pipeline.py
+
+or
+
+tts_service.py
+
+Engine-specific behavior belongs only inside the engine implementation.
+
+---
+
+# ENGINE MANAGER RULES
+
+TTSEngineManager is responsible for
+
+- Engine Selection
+- Health Checks
+- Initialization
+- Retry
+- Timeout Handling
+- Automatic Fallback
+- Voice Compatibility
+- Request Adaptation
+- Cache Integration
+- Logging
+
+No other module should duplicate this logic.
 
 ---
 
 # FALLBACK RULES
 
-If the selected engine fails
+If selected engine fails
 
 ↓
 
-Try next configured engine
+Retry
+
+↓
+
+If still fails
+
+↓
+
+Use next configured fallback
 
 ↓
 
@@ -147,294 +286,242 @@ Continue until success
 
 ↓
 
-If all fail
+If every engine fails
 
 ↓
 
-Return one combined error
+Return one combined error containing every engine failure.
 
-Never stop after the first engine failure.
+Never stop after the first failure.
 
----
-
-# AUDIO QUALITY
-
-Every generated voice should pass through
-
-Silence trimming
-
-Fade in
-
-Fade out
-
-Compression
-
-EQ
-
-Peak limiting
-
-LUFS normalization
-
-Volume matching
-
-Timing alignment
-
-Overlap prevention
+Fallback order must remain configurable.
 
 ---
 
-# AUDIO MIXING
+# ENGINE REQUIREMENTS
 
-Do not replace the complete original audio.
+Every engine should support whenever technically possible
 
-Goal
+- Retry
+- Timeout
+- Health Check
+- Capability Discovery
+- Voice Selection
+- Streaming
+- Voice Cloning (optional)
+- Multi Speaker (optional)
+- Language Validation
+- Structured Errors
 
-Replace only spoken dialogue.
+Optional capabilities must gracefully degrade.
 
-Preserve
-
-Background music
-
-Ambient sounds
-
-Environmental sounds
-
-Sound effects
-
-If source separation is unavailable
-
-Automatically duck the original audio only while dubbed speech plays.
+The pipeline must never crash simply because an optional capability is unavailable.
 
 ---
 
-# VIDEO PIPELINE
+# CHANGELOG
 
-Required stages
+All notable changes to this project will be documented in this file.
 
-Upload
-
-Validation
-
-Audio Extraction
-
-Transcription
-
-Translation
-
-Subtitle Generation
-
-TTS
-
-Audio Enhancement
-
-Audio Mixing
-
-Video Merge
-
-Verification
-
-Cleanup
+This project follows semantic versioning where practical.
 
 ---
 
-# LONG VIDEO SUPPORT
+# [3.2.0] - Planned
 
-Target
+## Major Architecture
 
-2 hours
-
-Implementation
-
-Chunk processing
-
-Chunk recovery
-
-Chunk merge
-
-Streaming processing
-
-Temporary cleanup
-
-Memory optimization
+- Complete production-grade modular TTS architecture.
+- Multiple TTS engine support.
+- Automatic fallback engine manager.
+- Engine capability detection.
+- Health check system.
+- Voice cache.
+- Config-driven engine registry.
 
 ---
 
-# OPTIONAL FEATURES
+## Audio Pipeline
 
-Optional features must automatically disable themselves if dependencies are unavailable.
+Added:
 
-Never crash the pipeline because an optional feature is unavailable.
-
-Examples
-
-Lip Sync
-
-Voice Cloning
-
-Streaming TTS
-
-Speaker Diarization
-
----
-
-# PERFORMANCE
-
-Prefer
-
-Lazy loading
-
-Streaming I/O
-
-Parallel processing
-
-Connection pooling
-
-Shared HTTP sessions
-
-Caching
-
-Automatic cleanup
+- Audio Enhancement Pipeline
+- Silence Trimming
+- Loudness Normalization
+- Dynamic Compression
+- Equalizer
+- Peak Limiter
+- Noise Gate
+- Audio Fade In
+- Audio Fade Out
+- Volume Matching
 
 ---
 
-# CODE STYLE
+## Speech Processing
 
-Mandatory
+Added:
 
-Type hints
-
-Docstrings
-
-Structured logging
-
-Meaningful variable names
-
-No duplicated business logic
-
-No dead code
-
-No circular imports
-
-No wildcard imports
+- Voice Timeline Alignment
+- Overlap Prevention
+- Segment Validation
+- Audio Duration Validation
+- Segment Recovery
+- Timeline Repair
 
 ---
 
-# DOCUMENTATION
+## Background Audio
 
-Whenever architecture changes
+Added:
 
-Update
+- Preserve Original Background Music
+- Preserve Original SFX
+- Voice Ducking
+- Automatic Audio Mixing
 
-PROJECT_SPECIFICATION.md
+When source separation is unavailable:
 
-IMPLEMENTATION_RULES.md
-
-ARCHITECTURE.md
-
-ROADMAP.md
-
-CHANGELOG.md
-
-API documentation
-
-Migration documentation
+- Keep original audio
+- Reduce original volume only while dubbed speech plays
+- Restore original volume after speech
 
 ---
 
-# TESTING
+## Long Video Processing
 
-Before declaring implementation complete
+Added:
 
-Verify
+- Chunk Processing
+- Resume Processing
+- Chunk Merge
+- Temporary Cleanup
+- Memory Optimization
+- Streaming File Processing
 
-Application startup
+Target Support:
 
-Imports
-
-Configuration
-
-API endpoints
-
-Upload
-
-Translation
-
-Subtitles
-
-TTS
-
-Fallback chain
-
-Audio merge
-
-Video merge
-
-Cleanup
-
-Render deployment
-
-Health endpoint
+- Up to 2 Hour Videos
 
 ---
 
-# CLAIMS
+## Performance
 
-Never claim
+Added:
 
-"Production Ready"
-
-unless verified.
-
-Never claim
-
-"Fixed"
-
-unless reproduced and verified.
-
-Never invent successful test results.
-
-Report exactly what was verified.
+- Parallel Translation
+- Parallel TTS
+- Optimized FFmpeg Commands
+- Async File Processing
+- Shared HTTP Sessions
+- Lazy Loading
+- Voice Cache
 
 ---
 
-# RENDER FREE
+## Render Free Compatibility
 
-Default implementation must work on
+Supported:
 
-Render Free
+- FastAPI
+- Python 3.12
+- FFmpeg
+- Whisper API
+- Deep Translator
+- gTTS
+- Edge TTS
 
-without requiring
+Optional:
 
-GPU
+- Azure
+- Piper
+- XTTS
+- ElevenLabs
 
-CUDA
-
-PyTorch
-
-Paid APIs
-
-Premium cloud infrastructure
-
-Heavy models
-
-Optional features may require additional dependencies but must degrade gracefully.
+Unavailable optional engines never stop the pipeline.
 
 ---
 
-# FINAL RULE
+## API
 
-Whenever implementing a new feature
+Added:
 
-Always
+- Engine Health Endpoint
+- Engine Capability Endpoint
+- Voice Listing Endpoint
+- Better Error Responses
+- Structured Logs
 
-Audit
+---
 
-Plan
+## Reliability
 
-Implement
+Improved:
 
-Verify
+- Retry Logic
+- Timeout Handling
+- Engine Recovery
+- Automatic Fallback
+- Detailed Error Reporting
+- Validation
 
-Document
+---
 
-Only then declare the work complete.
+## Documentation
+
+Added:
+
+- PROJECT_SPECIFICATION.md
+- IMPLEMENTATION_RULES.md
+- ARCHITECTURE.md
+- ROADMAP.md
+- CLAUDE.md
+
+---
+
+## Future Ready
+
+Architecture prepared for:
+
+- Lip Sync
+- Voice Cloning
+- Speaker Diarization
+- Multi Speaker
+- Streaming TTS
+- Voice Conversion
+- API Versioning
+
+These features remain disabled unless free dependencies are available.
+
+---
+
+# [3.1.0]
+
+Initial modular multi-engine TTS architecture.
+
+- Engine Manager
+- BaseTTSEngine
+- gTTS
+- Edge
+- Azure
+- Piper
+- XTTS
+- ElevenLabs
+- Health Checks
+- Fallback System
+
+---
+
+# [3.0.0]
+
+Original AI Video Dubbing Platform.
+
+Features:
+
+- Upload
+- Transcription
+- Translation
+- Subtitle Generation
+- Edge TTS
+- Audio Merge
+- Final Render
