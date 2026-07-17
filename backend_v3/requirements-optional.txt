@@ -1,0 +1,34 @@
+# ==========================================================================
+# AI Video Dubbing Platform V3.1 LTS - Optional Heavy TTS Engine Dependencies
+# ==========================================================================
+# NOT installed by the default Dockerfile / requirements.txt, because these
+# pull in large native or ML dependencies that are incompatible with
+# Render's free tier (512MB RAM) and meaningfully increase image size and
+# cold-start time. Install this file only for a self-hosted deployment (or
+# a dedicated worker/instance) that needs the Piper and/or XTTS engines:
+#
+#   pip install -r requirements.txt -r requirements-optional.txt
+#
+# Both engines degrade gracefully when NOT installed: GET /tts/engines
+# reports them as unavailable, and explicitly selecting one in POST /dub
+# returns a clean 200-with-fallback (or a clear error if it is also the
+# fallback engine) instead of crashing the app.
+#
+# Versions below are best-effort pins; this sandbox has no network access
+# to confirm them against live PyPI (see MIGRATION_V3.1.md's Verification
+# Report) -- re-pin after a real `pip install` / `pip index versions` check.
+# ==========================================================================
+
+# --- Piper (local, CPU-friendly neural TTS) --------------------------------
+# Also requires a separately-downloaded `piper` binary (or console script)
+# plus one or more `.onnx` voice models -- see PIPER_BINARY_PATH,
+# PIPER_MODEL_DIR, and PIPER_VOICE_MODEL_MAP in .env.example.
+# https://github.com/rhasspy/piper
+piper-tts==1.2.0
+
+# --- XTTS v2 (Coqui, self-hosted voice cloning) ----------------------------
+# Pulls in PyTorch. CPU inference works but is slow; a GPU is strongly
+# recommended for production latency. Also requires a reference speaker
+# .wav file at synthesis time -- see XTTS_DEFAULT_SPEAKER_WAV in .env.example.
+# https://github.com/coqui-ai/TTS
+TTS==0.22.0
